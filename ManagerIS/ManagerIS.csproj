@@ -103,6 +103,10 @@
       <Project>{2e5a650c-c30c-4512-a33c-42604a745610}</Project>
       <Name>ManagerIS.Helper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ManagerIS.Operation\ManagerIS.Operation.csproj">
+      <Project>{825ba0b6-ac50-4b51-8e8f-53d2f5ae95fa}</Project>
+      <Name>ManagerIS.Operation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

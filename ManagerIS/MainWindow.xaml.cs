@@ -1,4 +1,5 @@
 ﻿using ManagerIS.Common;
+using ManagerIS.Operation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,8 @@ namespace ManagerIS
         {
             InitializeComponent();
             //初始化程序
-            Method.Initialize();
+            //Method.Initialize();
+            SQLiteOperation.Initialize();
         }
     }
 }

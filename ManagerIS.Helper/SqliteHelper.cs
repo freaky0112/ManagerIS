@@ -5,10 +5,23 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace ManagerIS.Helper {
     public class SQLiteHelper {
         private static string connectionString = string.Empty;
+
+        /// <summary>     
+        /// 构造函数     
+        /// </summary>     
+        /// <param name="dbPath">SQLite数据库文件路径</param>     
+        public  SQLiteHelper(string dbPath) {
+            connectionString = "Data Source=" + dbPath;
+        }
+
+        public static void CreateDB(object dATABASE) {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// 根据数据源、密码、版本号设置连接字符串。
@@ -40,25 +53,27 @@ namespace ManagerIS.Helper {
             }
         }
 
-        /// <summary> 
-        /// 对SQLite数据库执行增删改操作，返回受影响的行数。 
-        /// </summary> 
-        /// <param name="sql">要执行的增删改的SQL语句。</param> 
-        /// <param name="parameters">执行增删改语句所需要的参数，参数必须以它们在SQL语句中的顺序为准。</param> 
-        /// <returns></returns> 
-        /// <exception cref="Exception"></exception>
-        public int ExecuteNonQuery(string sql, params SQLiteParameter[] parameters) {
+        /// <summary>     
+        /// 对SQLite数据库执行增删改操作，返回受影响的行数。     
+        /// </summary>     
+        /// <param name="sql">要执行的增删改的SQL语句</param>     
+        /// <param name="parameters">执行增删改语句所需要的参数，参数必须以它们在SQL语句中的顺序为准</param>     
+        /// <returns></returns>     
+        public int ExecuteNonQuery(string sql, IList<SQLiteParameter> parameters) {
             int affectedRows = 0;
             using (SQLiteConnection connection = new SQLiteConnection(connectionString)) {
-                using (SQLiteCommand command = new SQLiteCommand(connection)) {
-                    try {
-                        connection.Open();
+                connection.Open();
+                using (DbTransaction transaction = connection.BeginTransaction()) {
+                    using (SQLiteCommand command = new SQLiteCommand(connection)) {
                         command.CommandText = sql;
-                        if (parameters.Length != 0) {
-                            command.Parameters.AddRange(parameters);
+                        if (!(parameters == null || parameters.Count == 0)) {
+                            foreach (SQLiteParameter parameter in parameters) {
+                                command.Parameters.Add(parameter);
+                            }
                         }
                         affectedRows = command.ExecuteNonQuery();
-                    } catch (Exception) { throw; }
+                    }
+                    transaction.Commit();
                 }
             }
             return affectedRows;
