@@ -37,6 +37,22 @@ namespace ManagerIS.Common {
         public override int GetHashCode() {
             return this.pzwh.GetHashCode();
         }
+        ///判断是否为已有地块
+        public NZYDK IsExist(string dkmc) {
+            NZYDK new_nzydk = new NZYDK(dkmc);
+            if (dk.Count<=0) {
+                this.dk.Add(new_nzydk);
+                return new_nzydk;
+            }
+            
+            foreach (NZYDK nzydk in dk) {
+                if (nzydk.Dkmc==dkmc) {
+                    return nzydk;
+                }
+            }
+            this.dk.Add(new_nzydk);
+            return new_nzydk;
+        }
 
     }
 
