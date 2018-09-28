@@ -28,7 +28,7 @@ namespace ManagerIS
             //Method.Initialize();
             //SQLiteOperation.Initialize();
 
-            tbxImportUrl.Text = @"\\Mac\Home\Desktop\终.xlsx";
+            tbxImportUrl.Text = @"C:\Users\freak\Desktop\终.xlsx";
         }
 
         private void tbxImportUrl_MouseDoubleClick(object sender, MouseButtonEventArgs e) {

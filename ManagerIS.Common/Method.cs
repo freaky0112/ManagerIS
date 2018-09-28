@@ -47,7 +47,7 @@ namespace ManagerIS.Common
         /// 返回数据库连接字符串
         /// </summary>
         /// <returns></returns>
-        public static string strConntection() {
+        public static string Conntection() {
             StringBuilder conn = new StringBuilder();
             conn.Append("server=");
             conn.Append(SERVER);

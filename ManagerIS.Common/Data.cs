@@ -53,6 +53,17 @@ namespace ManagerIS.Common {
             this.dk.Add(new_nzydk);
             return new_nzydk;
         }
+        /// <summary>
+        /// 面积汇总
+        /// </summary>
+        /// <returns></returns>
+        public Decimal GetArea() {
+            Decimal area = 0;
+            foreach (NZYDK nzydk in dk) {
+                area += nzydk.Dkmj;
+            }
+            return area;
+        }
 
     }
 
