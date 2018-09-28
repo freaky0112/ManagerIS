@@ -28,7 +28,43 @@ namespace ManagerIS.Common
             Regex r = new Regex(strValue);
             return r.IsMatch(strNumber);
         }
-       
+
+        #region mysql数据库链接
+        private const string SERVER = "192.168.3.41";
+
+        private const uint PORT = 3306;
+
+        private const string DATABASE = "info";
+
+        private const string UID = "admin";
+
+        private const string PWD = "admin";
+
+        private const string CHARSET = "'utf8'";
+
+        public static string table = "";
+        /// <summary>
+        /// 返回数据库连接字符串
+        /// </summary>
+        /// <returns></returns>
+        public static string strConntection() {
+            StringBuilder conn = new StringBuilder();
+            conn.Append("server=");
+            conn.Append(SERVER);
+            conn.Append(";port=");
+            conn.Append(PORT);
+            conn.Append(";database=");
+            conn.Append(DATABASE);
+            conn.Append(";uid=");
+            conn.Append(UID);
+            conn.Append(";pwd=");
+            conn.Append(PWD);
+            conn.Append(";charset=");
+            conn.Append(CHARSET);
+            return conn.ToString();
+
+        }
+        #endregion
     }
 
 
