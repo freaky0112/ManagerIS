@@ -203,6 +203,36 @@ namespace ManagerIS.Operation {
                 throw;
             }
         }
+
+        public static List<Data> MySQLRead() {
+            List<Data> datas = new List<Data>();
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from nzy");
+            MySqlDataReader reader;
+            try {
+                reader = MySqlHelper.ExecuteReader(Method.Conntection(),  sql.ToString());
+            } catch (Exception) {
+                throw;
+            }
+            while (reader.Read()) {
+                Data data = ReadDB(reader);
+                datas.Add(data);
+            }
+            return datas;
+        }
+        
+        private static Data ReadDB(MySqlDataReader reader) {
+            Data data = new Data();
+            try {
+                data.Guid = reader.GetGuid("GUID");
+                data.Nzy = reader.GetString("PCMC");
+                data.Pzwh = reader.GetString("PZWH");
+            } catch (Exception) {
+
+                throw;
+            }
+                return data;
+        }
     }
 
 

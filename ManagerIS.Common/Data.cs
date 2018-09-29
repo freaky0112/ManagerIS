@@ -24,7 +24,7 @@ namespace ManagerIS.Common {
         private DateTime pzrq;
         private List<NZYDK> dk;
 
-        public Guid Guid { get => guid; }
+        public Guid Guid { get => guid; set => guid = value; }
         public string Nzy { get => nzy; set => nzy = value; }
         public string Pzwh { get => pzwh; set => pzwh = value; }
         public List<NZYDK> Dk { get => dk; set => dk = value; }
@@ -95,7 +95,7 @@ namespace ManagerIS.Common {
         public override int GetHashCode() {
             return this.dkmc.GetHashCode();
         }
-public Guid Guid { get => guid; }
+        public Guid Guid { get => guid; set => guid = value; }
         public string Dkmc { get => dkmc; set => dkmc = value; }
         public decimal Dkmj { get => dkmj; set => dkmj = value; }
         public List<GDDK> Gddk { get => gddk; set => gddk = value; }
