@@ -64,6 +64,10 @@ namespace ManagerIS.Common {
             }
             return area;
         }
+        
+        public void DropDK() {
+            dk.Clear();
+        }
 
     }
 
@@ -100,6 +104,8 @@ namespace ManagerIS.Common {
         public decimal Dkmj { get => dkmj; set => dkmj = value; }
         public List<GDDK> Gddk { get => gddk; set => gddk = value; }
         public string Bz { get => bz; set => bz = value; }
+
+       
     }
 
     public class GDDK {
@@ -115,7 +121,7 @@ namespace ManagerIS.Common {
             this.guid = Guid.NewGuid();
         }
 
-        public Guid Guid { get => guid; }
+        public Guid Guid { get => guid; set => guid = value; }
         public string Dzjgh { get => dzjgh; set => dzjgh = value; }
         public string Xmmc { get => xmmc; set => xmmc = value; }
         public decimal Gdmj { get => gdmj; set => gdmj = value; }

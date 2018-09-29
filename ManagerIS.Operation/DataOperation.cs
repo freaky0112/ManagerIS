@@ -204,24 +204,29 @@ namespace ManagerIS.Operation {
             }
         }
 
+
+        /// <summary>
+        /// 读取批次信息
+        /// </summary>
+        /// <returns></returns>
         public static List<Data> MySQLRead() {
             List<Data> datas = new List<Data>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("select * from nzy");
+            sql.Append("select * from nzy ORDER BY PZRQ asc");
             MySqlDataReader reader;
             try {
-                reader = MySqlHelper.ExecuteReader(Method.Conntection(),  sql.ToString());
+                reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
             } catch (Exception) {
                 throw;
             }
             while (reader.Read()) {
-                Data data = ReadDB(reader);
+                Data data = ReadData(reader);
                 datas.Add(data);
             }
             return datas;
         }
         
-        private static Data ReadDB(MySqlDataReader reader) {
+        private static Data ReadData(MySqlDataReader reader) {
             Data data = new Data();
             try {
                 data.Guid = reader.GetGuid("GUID");
@@ -232,6 +237,61 @@ namespace ManagerIS.Operation {
                 throw;
             }
                 return data;
+        }
+
+        public static void MySQLDKRead(Data data) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@"SELECT * FROM info.dkqk where NZY='");
+            sql.Append(data.Guid);
+            sql.Append(@"'");
+            //MySqlParameter[] pt = new MySqlParameter[] {
+            //    new MySqlParameter("@NZY", data.Guid)
+            //};
+            MySqlDataReader reader;
+            try {
+                reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (Exception) {
+                throw;
+            }
+            data.Dk = new List<NZYDK>();
+            while (reader.Read()) {
+                
+                NZYDK nzydk = new NZYDK();
+                nzydk.Dkmc = reader.GetString("DKMC");
+                nzydk.Guid = reader.GetGuid("GUID");
+                nzydk.Dkmj = reader.GetDecimal("DKMJ");
+                
+                data.Dk.Add(nzydk);
+                
+            }
+        }
+
+        public static void MySQLGDRead(NZYDK nzydk) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@"SELECT * FROM info.gdqk where DKGUID='");
+            sql.Append(nzydk.Guid);
+            sql.Append(@"'");
+            //MySqlParameter[] pt = new MySqlParameter[] {
+            //    new MySqlParameter("@NZY", data.Guid)
+            //};
+            MySqlDataReader reader;
+            try {
+                reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (Exception) {
+                throw;
+            }
+            nzydk.Gddk = new List<GDDK>();
+            while (reader.Read()) {
+                GDDK gddk = new GDDK();
+                gddk.Guid = nzydk.Guid;
+                gddk.Dzjgh = reader.GetString("DZJGH");
+                gddk.Gdmj = reader.GetDecimal("GDMJ");
+                gddk.Xmmc = reader.GetString("YDDW");
+                gddk.Dgmj = reader.GetDecimal("DG");
+                gddk.Bz = (reader.IsDBNull(6)) ? "" : reader.GetString("BZ");
+                nzydk.Gddk.Add(gddk);
+            }
+
         }
     }
 
