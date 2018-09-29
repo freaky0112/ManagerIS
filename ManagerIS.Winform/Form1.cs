@@ -11,7 +11,7 @@ namespace ManagerIS.Winform {
         }
 
         NZYDK nzydk = new NZYDK();
-
+        List<Data> datas;
         private void Form1_Load(object sender, EventArgs e) {
             lswNZY.Columns.Add("lstPCMC", "批次名称");
             lswNZY.Columns[0].Width = lswNZY.Width;
@@ -35,7 +35,7 @@ namespace ManagerIS.Winform {
 
 
 
-            List<Data> datas = DataOperation.MySQLRead();
+            datas = DataOperation.MySQLRead();
             foreach (Data data in datas) {
                 ListViewItem item = new ListViewItem();
                 item.Text = data.Nzy;
@@ -86,6 +86,8 @@ namespace ManagerIS.Winform {
                 cbxCZFS.SelectedIndex = 1;
                 cbxCZFS.SelectedIndex = 0;
                 comboBox1.SelectedIndex = nzydk.Sx;
+                tbxBZ.Text = nzydk.Bz;
+                lblCurrentDk.Text = nzydk.Dkmc;
             }
         }
 
@@ -124,12 +126,29 @@ namespace ManagerIS.Winform {
         }
 
         private void tbxCZFS_TextChanged(object sender, EventArgs e) {
+            if (string.IsNullOrEmpty(tbxCZFS.Text)) {
+                tbxCZFS.Text = "0";
+            }
+            if (!Method.IsNumber(tbxCZFS.Text)) {
+                MessageBox.Show("请输入数字");
+                tbxCZFS.Text = "0";
+            }
             nzydk.Czfs[cbxCZFS.SelectedIndex] = decimal.Parse(tbxCZFS.Text);
         }
 
         private void btnSubmit_Click(object sender, EventArgs e) {
-            DataOperation.UpdateCZFS(nzydk);
-            MessageBox.Show("数据更新成功");
+            try {
+                nzydk.Check();
+                    DataOperation.UpdateCZFS(nzydk);
+                DataOperation.UpdateNzydk(nzydk);
+                    MessageBox.Show("数据更新成功");
+                tbxBZ.Text = "";
+
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+            }
+            
+
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e) {
@@ -159,6 +178,40 @@ namespace ManagerIS.Winform {
                     
                 }
             }
+        }
+
+        private void tbxFilterPC_TextChanged(object sender, EventArgs e) {
+            lswNZY.Items.Clear();
+            foreach (Data data in datas) {
+                ListViewItem item = new ListViewItem();
+                item.Text = data.Nzy;
+                item.Tag = data;
+                if (data.Nzy.Contains(tbxFilterPC.Text)) {
+                    lswNZY.Items.Add(item);
+                }
+                
+            }
+        }
+
+        private void tbxFilterPC_Enter(object sender, EventArgs e) {
+            TextBox txt = sender as TextBox;
+            txt.SelectAll();
+        }
+
+        private void tbxFilterPC_MouseClick(object sender, MouseEventArgs e) {
+            TextBox txt = sender as TextBox;
+            txt.Tag = 1;
+            txt.SelectAll();
+        }
+
+        private void tbxFilterPC_Leave(object sender, EventArgs e) {
+            TextBox txt = sender as TextBox;
+            txt.Tag = 1;
+            txt.SelectAll();
+        }
+
+        private void tbxBZ_TextChanged(object sender, EventArgs e) {
+           nzydk.Bz= tbxBZ.Text;
         }
     }
 }

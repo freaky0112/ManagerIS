@@ -34,13 +34,17 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tbxFilter = new System.Windows.Forms.TextBox();
+            this.tbxFilterPC = new System.Windows.Forms.TextBox();
+            this.lblCurrentDk = new System.Windows.Forms.Label();
+            this.tbxBZ = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lswNZY
             // 
             this.lswNZY.Location = new System.Drawing.Point(200, 11);
-            this.lswNZY.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lswNZY.Margin = new System.Windows.Forms.Padding(2);
             this.lswNZY.Name = "lswNZY";
             this.lswNZY.Size = new System.Drawing.Size(763, 230);
             this.lswNZY.TabIndex = 4;
@@ -51,7 +55,7 @@
             // lswDK
             // 
             this.lswDK.Location = new System.Drawing.Point(11, 11);
-            this.lswDK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lswDK.Margin = new System.Windows.Forms.Padding(2);
             this.lswDK.Name = "lswDK";
             this.lswDK.Size = new System.Drawing.Size(186, 656);
             this.lswDK.TabIndex = 5;
@@ -62,7 +66,7 @@
             // lswGDDK
             // 
             this.lswGDDK.Location = new System.Drawing.Point(200, 244);
-            this.lswGDDK.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lswGDDK.Margin = new System.Windows.Forms.Padding(2);
             this.lswGDDK.Name = "lswGDDK";
             this.lswGDDK.Size = new System.Drawing.Size(733, 122);
             this.lswGDDK.TabIndex = 6;
@@ -74,7 +78,7 @@
             // btnADD
             // 
             this.btnADD.Location = new System.Drawing.Point(937, 259);
-            this.btnADD.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnADD.Margin = new System.Windows.Forms.Padding(2);
             this.btnADD.Name = "btnADD";
             this.btnADD.Size = new System.Drawing.Size(26, 16);
             this.btnADD.TabIndex = 7;
@@ -85,7 +89,7 @@
             // btnRemove
             // 
             this.btnRemove.Location = new System.Drawing.Point(937, 300);
-            this.btnRemove.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(2);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(26, 20);
             this.btnRemove.TabIndex = 8;
@@ -113,7 +117,7 @@
             "核减重复统计面积",
             "其他（需明确具体方式）"});
             this.cbxCZFS.Location = new System.Drawing.Point(5, 19);
-            this.cbxCZFS.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cbxCZFS.Margin = new System.Windows.Forms.Padding(2);
             this.cbxCZFS.Name = "cbxCZFS";
             this.cbxCZFS.Size = new System.Drawing.Size(751, 20);
             this.cbxCZFS.TabIndex = 9;
@@ -122,7 +126,7 @@
             // tbxCZFS
             // 
             this.tbxCZFS.Location = new System.Drawing.Point(5, 43);
-            this.tbxCZFS.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbxCZFS.Margin = new System.Windows.Forms.Padding(2);
             this.tbxCZFS.Name = "tbxCZFS";
             this.tbxCZFS.Size = new System.Drawing.Size(751, 21);
             this.tbxCZFS.TabIndex = 10;
@@ -131,7 +135,7 @@
             // btnSubmit
             // 
             this.btnSubmit.Location = new System.Drawing.Point(660, 234);
-            this.btnSubmit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSubmit.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubmit.Name = "btnSubmit";
             this.btnSubmit.Size = new System.Drawing.Size(96, 24);
             this.btnSubmit.TabIndex = 11;
@@ -149,7 +153,7 @@
             "2019年6月30日前",
             "需长期推进"});
             this.comboBox1.Location = new System.Drawing.Point(5, 194);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(504, 20);
             this.comboBox1.TabIndex = 12;
@@ -157,6 +161,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.tbxBZ);
             this.groupBox1.Controls.Add(this.cbxCZFS);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.tbxCZFS);
@@ -177,11 +183,51 @@
             this.tbxFilter.TabIndex = 14;
             this.tbxFilter.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
+            // tbxFilterPC
+            // 
+            this.tbxFilterPC.Location = new System.Drawing.Point(969, 13);
+            this.tbxFilterPC.Name = "tbxFilterPC";
+            this.tbxFilterPC.Size = new System.Drawing.Size(67, 21);
+            this.tbxFilterPC.TabIndex = 15;
+            this.tbxFilterPC.MouseClick += new System.Windows.Forms.MouseEventHandler(this.tbxFilterPC_MouseClick);
+            this.tbxFilterPC.TextChanged += new System.EventHandler(this.tbxFilterPC_TextChanged);
+            this.tbxFilterPC.Enter += new System.EventHandler(this.tbxFilterPC_Enter);
+            this.tbxFilterPC.Leave += new System.EventHandler(this.tbxFilterPC_Leave);
+            // 
+            // lblCurrentDk
+            // 
+            this.lblCurrentDk.AutoSize = true;
+            this.lblCurrentDk.Location = new System.Drawing.Point(207, 429);
+            this.lblCurrentDk.Name = "lblCurrentDk";
+            this.lblCurrentDk.Size = new System.Drawing.Size(65, 12);
+            this.lblCurrentDk.TabIndex = 16;
+            this.lblCurrentDk.Text = "当前地块号";
+            // 
+            // tbxBZ
+            // 
+            this.tbxBZ.Location = new System.Drawing.Point(7, 90);
+            this.tbxBZ.Multiline = true;
+            this.tbxBZ.Name = "tbxBZ";
+            this.tbxBZ.Size = new System.Drawing.Size(748, 99);
+            this.tbxBZ.TabIndex = 13;
+            this.tbxBZ.TextChanged += new System.EventHandler(this.tbxBZ_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 72);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "备注";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1048, 759);
+            this.Controls.Add(this.lblCurrentDk);
+            this.Controls.Add(this.tbxFilterPC);
             this.Controls.Add(this.tbxFilter);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnRemove);
@@ -189,7 +235,7 @@
             this.Controls.Add(this.lswGDDK);
             this.Controls.Add(this.lswDK);
             this.Controls.Add(this.lswNZY);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -212,6 +258,10 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox tbxFilter;
+        private System.Windows.Forms.TextBox tbxFilterPC;
+        private System.Windows.Forms.Label lblCurrentDk;
+        private System.Windows.Forms.TextBox tbxBZ;
+        private System.Windows.Forms.Label label1;
     }
 }
 

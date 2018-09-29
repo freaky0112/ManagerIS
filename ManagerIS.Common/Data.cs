@@ -124,6 +124,47 @@ namespace ManagerIS.Common {
             return area;
         }
 
+        public bool Check() {
+            try {
+                if (dkmj - GetLeftArea() == GetWGYY() && GetWGYY() == GetCZFS()) {
+
+                } else {
+                    throw new Exception("未供面积与处理面积不一致");
+                }
+                if (dkmj - GetLeftArea()>0&&sx==0) {
+                    throw new Exception("未填写处理时间");
+                } 
+                
+            } catch (Exception e) {
+
+                throw e;
+            }
+            return true;
+        }
+        private Decimal GetLeftArea() {
+            Decimal area=0;
+            foreach (GDDK gd in gddk) {
+                area += gd.Gdmj;
+            }
+            return area;
+        }
+
+        private Decimal GetWGYY() {
+            Decimal area = 0;
+            for (int i = 0; i < 8; i++) {
+                area += czfs[i];
+            }
+            return area;
+        }
+
+        private Decimal GetCZFS() {
+            Decimal area = 0;
+            for (int i = 8; i < 14; i++) {
+                area += czfs[i];
+            }
+            return area;
+        }
+
     }
 
     public class GDDK {

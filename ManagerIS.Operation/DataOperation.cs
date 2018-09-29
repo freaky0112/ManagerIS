@@ -151,17 +151,20 @@ namespace ManagerIS.Operation {
             sql.Append("GUID,");
             sql.Append("NZY,");
             sql.Append("DKMC,");
-            sql.Append("DKMJ");
+            sql.Append("DKMJ,");
+            sql.Append("BZ");
             sql.Append(") values (");
             sql.Append("@GUID,");
             sql.Append("@NZY,");
             sql.Append("@DKMC,");
-            sql.Append("@DKMJ)");
+            sql.Append("@DKMJ,");
+            sql.Append("@BZ)");
             MySqlParameter[] pt = new MySqlParameter[] {
-                new MySqlParameter("GUID",nzydk.Guid),
-                new MySqlParameter("NZY",guid),
-                new MySqlParameter("DKMC",nzydk.Dkmc),
-                new MySqlParameter("DKMJ",nzydk.Dkmj),
+                new MySqlParameter("@GUID",nzydk.Guid),
+                new MySqlParameter("@NZY",guid),
+                new MySqlParameter("@DKMC",nzydk.Dkmc),
+                new MySqlParameter("@DKMJ",nzydk.Dkmj),
+                new MySqlParameter("@BZ",nzydk.Bz)
             };
             try {
                 Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
@@ -260,8 +263,8 @@ namespace ManagerIS.Operation {
                 nzydk.Dkmc = reader.GetString("DKMC");
                 nzydk.Guid = reader.GetGuid("GUID");
                 nzydk.Dkmj = reader.GetDecimal("DKMJ");
-                
-                
+                nzydk.Bz = (reader.IsDBNull(5)) ? "" : reader.GetString("BZ");
+
                 data.Dk.Add(nzydk);
                 
             }
@@ -406,52 +409,30 @@ namespace ManagerIS.Operation {
             } catch (MySqlException ex) {
                 throw ex;
             }
-
-
-
-
-
-
-
-
-            //sql.Append("INSERT INTO `czfs`(`");
-            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
-            //    sql.Append(i + 20);
-            //    sql.Append("`, `");
-            //}
-            //sql.Append(nzydk.Czfs.Length+20);
-            //sql.Append("`, `GUID`");
-            //sql.Append("`) VALUES(`");
-            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
-            //    sql.Append(nzydk.Czfs[i]);
-            //    sql.Append("`, `");
-            //}
-            //sql.Append(nzydk.Sx);
-            //sql.Append("`, `");
-            //sql.Append(nzydk.Guid);
-
-            //sql.Append("`)   ON DUPLICATE KEY UPDATE (");
-            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
-            //    sql.Append("`");
-            //    sql.Append(i + 20);
-            //    sql.Append("`= ");
-            //    sql.Append(nzydk.Czfs[i]);
-            //    sql.Append(", ");
-            //}
-            //sql.Append("`");
-            //sql.Append(nzydk.Czfs.Length+ 20);
-            //sql.Append("`= ");
-            //sql.Append(nzydk.Sx);
-            //sql.Append(");");
-            //try {
-            //    Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), null);
-            //} catch (MySqlException ex) {
-            //    throw ex;
-            //}
-
         }
+
+        public static void  UpdateNzydk(NZYDK nzydk) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update ");
+            sql.Append("dkqk");
+            sql.Append(" set ");
+            sql.Append("BZ=@bz ");
+            sql.Append("where ");
+            sql.Append("GUID= @GUID ");
+            MySqlParameter[] pt = new MySqlParameter[] {
+                new MySqlParameter("@GUID",nzydk.Guid),
+                new MySqlParameter("@BZ",nzydk.Bz)
+            };
+
+            try {
+                Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
+            } catch (MySqlException ex) {
+                throw ex;
+            }
+        }
+    }
     }
 
 
 
-}
+
