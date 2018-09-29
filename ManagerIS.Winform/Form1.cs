@@ -16,7 +16,8 @@ namespace ManagerIS.Winform {
             lswNZY.Columns.Add("lstPCMC", "批次名称");
             lswNZY.Columns[0].Width = lswNZY.Width;
             lswDK.Columns.Add("lstDKMC", "地块名称");
-            lswDK.Columns[0].Width = lswDK.Width;
+            lswDK.Columns.Add("lstDKMJ", "地块面积");
+            lswDK.Columns[0].Width = lswDK.Width/2;
             lswGDDK.Columns.Add("供地文号");
             lswGDDK.Columns.Add("用地单位");
             lswGDDK.Columns.Add("出让面积");
@@ -50,8 +51,8 @@ namespace ManagerIS.Winform {
                 Data data = (Data)lswNZY.SelectedItems[0].Tag;
                 DataOperation.MySQLDKRead(data);
                 foreach (NZYDK nzydk in data.Dk) {
-                    ListViewItem item = new ListViewItem();
-                    item.Text = nzydk.Dkmc;
+                    string[] str = new string[] { nzydk.Dkmc,nzydk.Dkmj.ToString() };
+                    ListViewItem item = new ListViewItem(str);
                     item.Tag = nzydk;
                     lswDK.Items.Add(item);
                 }
@@ -82,13 +83,13 @@ namespace ManagerIS.Winform {
 
                     lswGDDK.Items.Add(item);
                 }
+                cbxCZFS.SelectedIndex = 1;
                 cbxCZFS.SelectedIndex = 0;
+                comboBox1.SelectedIndex = nzydk.Sx;
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
 
-        }
 
         private void lswGDDK_DoubleClick(object sender, EventArgs e) {
             if (lswNZY.SelectedItems.Count > 0) {
@@ -128,6 +129,7 @@ namespace ManagerIS.Winform {
 
         private void btnSubmit_Click(object sender, EventArgs e) {
             DataOperation.UpdateCZFS(nzydk);
+            MessageBox.Show("数据更新成功");
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e) {
@@ -136,6 +138,27 @@ namespace ManagerIS.Winform {
 
         private void lswGDDK_SelectedIndexChanged(object sender, EventArgs e) {
 
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e) {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e) {
+            lswDK.Items.Clear();
+            if (lswNZY.SelectedItems.Count > 0) {
+                Data data = (Data)lswNZY.SelectedItems[0].Tag;
+                DataOperation.MySQLDKRead(data);
+                foreach (NZYDK nzydk in data.Dk) {
+                    string[] str = new string[] { nzydk.Dkmc, nzydk.Dkmj.ToString() };
+                    ListViewItem item = new ListViewItem(str);
+                    item.Tag = nzydk;
+                    if (nzydk.Dkmc.Contains(tbxFilter.Text)) {
+                        lswDK.Items.Add(item);
+                    }
+                    
+                }
+            }
         }
     }
 }

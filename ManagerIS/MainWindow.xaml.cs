@@ -21,7 +21,12 @@ namespace ManagerIS {
         }
 
         private void btnImport_Click(object sender, RoutedEventArgs e) {
-            DataOperation.ExcelToMysql(tbxImportUrl.Text, 2017);
+            int year = int.Parse(tbxYear.Text);
+            for (int i = 2009; i <= 2017; i++) {
+                DataOperation.ExcelToMysql(tbxImportUrl.Text, i);
+            }
+            
+            MessageBox.Show("导入成功");
         }
     }
 }

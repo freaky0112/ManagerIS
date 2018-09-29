@@ -23,15 +23,18 @@ namespace ManagerIS.Winform {
         }
         GDDK gddk;
         private void btnOK_Click(object sender, EventArgs e) {
+            if (string.IsNullOrWhiteSpace(tbxXMMC.Text)) {
+                MessageBox.Show("数据录入有误");
+            } else {
 
+                gddk.Dzjgh = tbxDZJGH.Text;
+                gddk.Xmmc = tbxXMMC.Text;
+                gddk.Gdmj = decimal.Parse(tbxGDMJ.Text);
+                gddk.Dgmj = decimal.Parse(tbxDGMJ.Text);
 
-            gddk.Dzjgh = tbxDZJGH.Text;
-            gddk.Xmmc = tbxXMMC.Text;
-            gddk.Gdmj = decimal.Parse(tbxGDMJ.Text);
-            gddk.Dgmj = decimal.Parse(tbxDGMJ.Text);
-
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
         }
     }
 }

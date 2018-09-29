@@ -266,24 +266,7 @@ namespace ManagerIS.Operation {
                 
             }
 
-            foreach (NZYDK nzydk in data.Dk) {
-                sql = new StringBuilder();
-                sql.Append(@"SELECT * FROM info.czfs where GUID='");
-                sql.Append(nzydk.Guid);
-                sql.Append(@"'");
-                
-                try {
-                    reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
-                } catch (Exception) {
-                    throw;
-                }
-                while (reader.Read()) {
-                    for (int i = 0; i < nzydk.Czfs.Length; i++) {
-                        nzydk.Czfs[i] = reader.GetDecimal((i + 20).ToString());
-                    }
-                    nzydk.Sx = reader.GetInt32(34.ToString());
-                }
-            }
+           
             
         }
 
@@ -313,6 +296,25 @@ namespace ManagerIS.Operation {
                 gddk.Id = reader.GetInt32("ID");
                 nzydk.Gddk.Add(gddk);
             }
+
+            
+                sql = new StringBuilder();
+                sql.Append(@"SELECT * FROM info.czfs where GUID='");
+                sql.Append(nzydk.Guid);
+                sql.Append(@"'");
+
+                try {
+                    reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+                } catch (Exception) {
+                    throw;
+                }
+                while (reader.Read()) {
+                    for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                        nzydk.Czfs[i] = reader.GetDecimal((i + 20).ToString());
+                    }
+                    nzydk.Sx = reader.GetInt32(34.ToString());
+                }
+            
 
         }
 
@@ -357,40 +359,95 @@ namespace ManagerIS.Operation {
 
         public static void UpdateCZFS(NZYDK nzydk) {
             StringBuilder sql = new StringBuilder();
-            sql.Append("INSERT INTO `czfs`(`");
-            for (int i = 0; i < nzydk.Czfs.Length; i++) {
-                sql.Append(i + 20);
-                sql.Append("`,`");
-            }
-            sql.Append(nzydk.Czfs.Length+20);
-            sql.Append("`,`GUID`");
-            sql.Append("`) VALUES(`");
-            for (int i = 0; i < nzydk.Czfs.Length; i++) {
-                sql.Append(nzydk.Czfs[i]);
-                sql.Append("`,`");
-            }
-            sql.Append(nzydk.Sx);
-            sql.Append("`,`");
-            sql.Append(nzydk.Guid);
-
-            sql.Append("`)   ON DUPLICATE KEY UPDATE (");
-            for (int i = 0; i < nzydk.Czfs.Length; i++) {
+            sql.Append("SELECT count(*) from czfs where GUID=@GUID");
+            MySqlParameter[] pt = new MySqlParameter[] { new MySqlParameter("@GUID", nzydk.Guid) };
+            int exist = Int32.Parse(Helper.MySqlHelper.ExecuteScalar(Method.Conntection(), CommandType.Text, sql.ToString(), pt).ToString());
+            if (exist==0) {
+                sql = new StringBuilder();
+                sql.Append(@"INSERT INTO `info`.`czfs` (`");
+                for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                    sql.Append(i + 20);
+                    sql.Append("`, `");
+                }
+                sql.Append(nzydk.Czfs.Length + 20);
+                sql.Append("`, `GUID`");
+                sql.Append(") VALUES('");
+                for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                    sql.Append(nzydk.Czfs[i]);
+                    sql.Append("', '");
+                }
+                sql.Append(nzydk.Sx);
+                sql.Append("','");
+                sql.Append(nzydk.Guid);
+                sql.Append("')");
+            } else {
+                sql = new StringBuilder();
+                sql.Append("UPDATE `info`.`czfs` SET ");
+                for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                    sql.Append("`");
+                    sql.Append(i + 20);
+                    sql.Append("`= '");
+                    sql.Append(nzydk.Czfs[i]);
+                    sql.Append("', ");
+                }
                 sql.Append("`");
-                sql.Append(i + 20);
-                sql.Append("`= ");
-                sql.Append(nzydk.Czfs[i]);
-                sql.Append(", ");
+                sql.Append(nzydk.Czfs.Length + 20);
+                sql.Append("`= '");
+                sql.Append(nzydk.Sx);
+                sql.Append("' where( ");
+                sql.Append("`GUID`= '");
+                sql.Append(nzydk.Guid);
+                sql.Append("')");
+
             }
-            sql.Append("`");
-            sql.Append(nzydk.Czfs.Length+ 20);
-            sql.Append("`= ");
-            sql.Append(nzydk.Sx);
-            sql.Append(");");
+
             try {
                 Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), null);
             } catch (MySqlException ex) {
                 throw ex;
             }
+
+
+
+
+
+
+
+
+            //sql.Append("INSERT INTO `czfs`(`");
+            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
+            //    sql.Append(i + 20);
+            //    sql.Append("`, `");
+            //}
+            //sql.Append(nzydk.Czfs.Length+20);
+            //sql.Append("`, `GUID`");
+            //sql.Append("`) VALUES(`");
+            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
+            //    sql.Append(nzydk.Czfs[i]);
+            //    sql.Append("`, `");
+            //}
+            //sql.Append(nzydk.Sx);
+            //sql.Append("`, `");
+            //sql.Append(nzydk.Guid);
+
+            //sql.Append("`)   ON DUPLICATE KEY UPDATE (");
+            //for (int i = 0; i < nzydk.Czfs.Length; i++) {
+            //    sql.Append("`");
+            //    sql.Append(i + 20);
+            //    sql.Append("`= ");
+            //    sql.Append(nzydk.Czfs[i]);
+            //    sql.Append(", ");
+            //}
+            //sql.Append("`");
+            //sql.Append(nzydk.Czfs.Length+ 20);
+            //sql.Append("`= ");
+            //sql.Append(nzydk.Sx);
+            //sql.Append(");");
+            //try {
+            //    Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            //} catch (MySqlException ex) {
+            //    throw ex;
+            //}
 
         }
     }
