@@ -79,17 +79,20 @@ namespace ManagerIS.Common {
         private List<GDDK> gddk;
         private string bz;
 
-
+        private decimal[] czfs;
+        private int sx;
         
         public NZYDK() {
             this.gddk = new List<GDDK>();
             this.guid = Guid.NewGuid();
+            czfs = new decimal[14];
         }
 
         public NZYDK(string dkmc) {
             this.dkmc = dkmc;
             this.gddk = new List<GDDK>();
             this.guid = Guid.NewGuid();
+            czfs = new decimal[14];
         }
 
         public bool Equals(NZYDK nzydk) {
@@ -104,8 +107,23 @@ namespace ManagerIS.Common {
         public decimal Dkmj { get => dkmj; set => dkmj = value; }
         public List<GDDK> Gddk { get => gddk; set => gddk = value; }
         public string Bz { get => bz; set => bz = value; }
+        /// <summary>
+        /// 时限
+        /// </summary>
+        public int Sx { get => sx; set => sx = value; }
+        /// <summary>
+        /// 处置方式
+        /// </summary>
+        public decimal[] Czfs { get => czfs; set => czfs = value; }
 
-       
+        public Decimal SYMJ() {
+            decimal area = 0;
+            foreach (GDDK gd in Gddk) {
+                area += gd.Gdmj;
+            }
+            return area;
+        }
+
     }
 
     public class GDDK {
@@ -116,6 +134,7 @@ namespace ManagerIS.Common {
         private decimal gdmj;
         private decimal dgmj;
         private string bz;
+        private int id;
 
         public GDDK() {
             this.guid = Guid.NewGuid();
@@ -127,5 +146,6 @@ namespace ManagerIS.Common {
         public decimal Gdmj { get => gdmj; set => gdmj = value; }
         public decimal Dgmj { get => dgmj; set => dgmj = value; }
         public string Bz { get => bz; set => bz = value; }
+        public int Id { get => id; set => id = value; }
     }
 }

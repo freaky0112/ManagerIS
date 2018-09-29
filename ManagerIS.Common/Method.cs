@@ -30,7 +30,7 @@ namespace ManagerIS.Common
         }
 
         #region mysql数据库链接
-        private const string SERVER = "localhost";
+        private const string SERVER = "10.37.129.2";
 
         private const uint PORT = 3306;
 

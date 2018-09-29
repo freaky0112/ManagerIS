@@ -175,7 +175,7 @@ namespace ManagerIS.Operation {
         /// </summary>
         /// <param name="guid"></param>
         /// <param name="gddk"></param>
-        private static void GddkToMySQL(Guid guid, GDDK gddk) {
+        public static void GddkToMySQL(Guid guid, GDDK gddk) {
             StringBuilder sql = new StringBuilder();
             sql.Append("insert into gdqk (");
             sql.Append("DKGUID,");
@@ -261,9 +261,30 @@ namespace ManagerIS.Operation {
                 nzydk.Guid = reader.GetGuid("GUID");
                 nzydk.Dkmj = reader.GetDecimal("DKMJ");
                 
+                
                 data.Dk.Add(nzydk);
                 
             }
+
+            foreach (NZYDK nzydk in data.Dk) {
+                sql = new StringBuilder();
+                sql.Append(@"SELECT * FROM info.czfs where GUID='");
+                sql.Append(nzydk.Guid);
+                sql.Append(@"'");
+                
+                try {
+                    reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+                } catch (Exception) {
+                    throw;
+                }
+                while (reader.Read()) {
+                    for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                        nzydk.Czfs[i] = reader.GetDecimal((i + 20).ToString());
+                    }
+                    nzydk.Sx = reader.GetInt32(34.ToString());
+                }
+            }
+            
         }
 
         public static void MySQLGDRead(NZYDK nzydk) {
@@ -289,7 +310,86 @@ namespace ManagerIS.Operation {
                 gddk.Xmmc = reader.GetString("YDDW");
                 gddk.Dgmj = reader.GetDecimal("DG");
                 gddk.Bz = (reader.IsDBNull(6)) ? "" : reader.GetString("BZ");
+                gddk.Id = reader.GetInt32("ID");
                 nzydk.Gddk.Add(gddk);
+            }
+
+        }
+
+        public static void DeleteGDDK(GDDK gddk) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("delete from gdqk where ID =");
+            sql.Append(gddk.Id);
+            try {
+                Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (MySqlException ex) {
+                throw ex;
+            }
+        }
+
+        public static void UpdateGDDK(GDDK gddk) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("update ");
+            sql.Append("gdqk");
+            sql.Append(" set ");
+            sql.Append("DZJGH=@DZJGH,");
+            sql.Append("YDDW=@YDDW,");
+            sql.Append("GDMJ=@GDMJ,");
+            sql.Append("DG=@DG ");
+            sql.Append("where ");
+            sql.Append("ID= @ID ");
+            MySqlParameter[] pt = new MySqlParameter[] {
+                new MySqlParameter("@ID",gddk.Id),
+                new MySqlParameter("@DZJGH",gddk.Dzjgh),
+                new MySqlParameter("@YDDW",gddk.Xmmc),
+                new MySqlParameter("@GDMJ",gddk.Gdmj),
+                new MySqlParameter("@DG",gddk.Dgmj)
+            };
+
+            try {
+                Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
+            } catch (MySqlException ex) {
+                throw ex;
+            }
+        }
+
+
+
+        public static void UpdateCZFS(NZYDK nzydk) {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("INSERT INTO `czfs`(`");
+            for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                sql.Append(i + 20);
+                sql.Append("`,`");
+            }
+            sql.Append(nzydk.Czfs.Length+20);
+            sql.Append("`,`GUID`");
+            sql.Append("`) VALUES(`");
+            for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                sql.Append(nzydk.Czfs[i]);
+                sql.Append("`,`");
+            }
+            sql.Append(nzydk.Sx);
+            sql.Append("`,`");
+            sql.Append(nzydk.Guid);
+
+            sql.Append("`)   ON DUPLICATE KEY UPDATE (");
+            for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                sql.Append("`");
+                sql.Append(i + 20);
+                sql.Append("`= ");
+                sql.Append(nzydk.Czfs[i]);
+                sql.Append(", ");
+            }
+            sql.Append("`");
+            sql.Append(nzydk.Czfs.Length+ 20);
+            sql.Append("`= ");
+            sql.Append(nzydk.Sx);
+            sql.Append(");");
+            try {
+                Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (MySqlException ex) {
+                throw ex;
             }
 
         }
