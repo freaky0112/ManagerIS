@@ -9,8 +9,12 @@
     <Grid>
         <Button Name="btnImport" Content="导入" HorizontalAlignment="Left" Margin="458,262,0,0" VerticalAlignment="Top" Width="75" Click="btnImport_Click" />
         <TextBox Name="tbxImportUrl" HorizontalAlignment="Left" Height="23" Margin="118,224,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="415" MouseDoubleClick="tbxImportUrl_MouseDoubleClick"/>
+<<<<<<< HEAD
         <TextBox Name="tbxYear" HorizontalAlignment="Left" Height="23" Margin="366,181,0,0" TextWrapping="Wrap" Text="2017" VerticalAlignment="Top" Width="120"/>
         <Button Name="btnExport" Content="导出" HorizontalAlignment="Left" Margin="458,300,0,0" VerticalAlignment="Top" Width="75" Click="btnExport_Click"/>
+=======
+        <TextBox Name="tbxYear" HorizontalAlignment="Left" Height="23" Margin="366,181,0,0" TextWrapping="Wrap" Text="2018" VerticalAlignment="Top" Width="120"/>
+>>>>>>> 3dd0b86e11b5a189d21224a992040243824a666d
 
     </Grid>
 </Window>

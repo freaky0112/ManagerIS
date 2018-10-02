@@ -186,19 +186,22 @@ namespace ManagerIS.Operation {
             sql.Append("DZJGH,");
             sql.Append("YDDW,");
             sql.Append("GDMJ,");
-            sql.Append("DG");
+            sql.Append("DG, ");
+            sql.Append("BZ ");
             sql.Append(") values (");
             sql.Append("@DKGUID,");
             sql.Append("@DZJGH,");
             sql.Append("@YDDW,");
             sql.Append("@GDMJ,");
-            sql.Append("@DG)");
+            sql.Append("@DG,");
+            sql.Append("@BZ)");
             MySqlParameter[] pt = new MySqlParameter[] {
                 new MySqlParameter("@DKGUID",guid),
                 new MySqlParameter("@DZJGH",gddk.Dzjgh),
                 new MySqlParameter("@YDDW",gddk.Xmmc),
                 new MySqlParameter("@GDMJ",gddk.Gdmj),
-                new MySqlParameter("@DG",gddk.Dgmj)
+                new MySqlParameter("@DG",gddk.Dgmj),
+                new MySqlParameter("@BZ",gddk.Bz)
             };
             try {
                 Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
@@ -346,7 +349,8 @@ namespace ManagerIS.Operation {
             sql.Append("DZJGH=@DZJGH,");
             sql.Append("YDDW=@YDDW,");
             sql.Append("GDMJ=@GDMJ,");
-            sql.Append("DG=@DG ");
+            sql.Append("DG=@DG, ");
+            sql.Append("BZ=@BZ ");
             sql.Append("where ");
             sql.Append("ID= @ID ");
             MySqlParameter[] pt = new MySqlParameter[] {
@@ -354,7 +358,9 @@ namespace ManagerIS.Operation {
                 new MySqlParameter("@DZJGH",gddk.Dzjgh),
                 new MySqlParameter("@YDDW",gddk.Xmmc),
                 new MySqlParameter("@GDMJ",gddk.Gdmj),
-                new MySqlParameter("@DG",gddk.Dgmj)
+                new MySqlParameter("@DG",gddk.Dgmj),
+                new MySqlParameter("@BZ",gddk.Bz)
+                
             };
 
             try {

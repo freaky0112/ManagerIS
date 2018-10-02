@@ -14,7 +14,7 @@ namespace ManagerIS {
             //Method.Initialize();
             //SQLiteOperation.Initialize();
 
-            tbxImportUrl.Text = @"C:\Users\freak\Desktop\终.xlsx";
+            tbxImportUrl.Text = @"C:\Users\freak\Desktop\补充.xlsx";
         }
 
         private void tbxImportUrl_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -23,9 +23,9 @@ namespace ManagerIS {
 
         private void btnImport_Click(object sender, RoutedEventArgs e) {
             int year = int.Parse(tbxYear.Text);
-            for (int i = 2009; i <= 2017; i++) {
-                DataOperation.ExcelToMysql(tbxImportUrl.Text, i);
-            }
+            //for (int i = 2009; i <= 2018; i++) {
+                DataOperation.ExcelToMysql(tbxImportUrl.Text, year);
+            //}
             
             MessageBox.Show("导入成功");
         }
