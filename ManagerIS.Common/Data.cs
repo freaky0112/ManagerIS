@@ -69,6 +69,15 @@ namespace ManagerIS.Common {
             dk.Clear();
         }
 
+        public int GetQuery() {
+            int num = 0;
+            num += dk.Count;
+            for (int i = 0; i < dk.Count; i++) {
+                num += dk[i].Gddk.Count;
+            }
+            return num;
+        }
+
     }
 
     public class NZYDK {
@@ -176,17 +185,42 @@ namespace ManagerIS.Common {
         private decimal dgmj;
         private string bz;
         private int id;
+        private string tdyt;
 
         public GDDK() {
             this.guid = Guid.NewGuid();
         }
-
+        /// <summary>
+        /// 农转用地块GUID
+        /// </summary>
         public Guid Guid { get => guid; set => guid = value; }
+        /// <summary>
+        /// 电子监管号
+        /// </summary>
         public string Dzjgh { get => dzjgh; set => dzjgh = value; }
+        /// <summary>
+        /// 用地单位 
+        /// </summary>
         public string Xmmc { get => xmmc; set => xmmc = value; }
+        /// <summary>
+        /// 供地面积
+        /// </summary>
         public decimal Gdmj { get => gdmj; set => gdmj = value; }
+        /// <summary>
+        /// 带供面积
+        /// </summary>
         public decimal Dgmj { get => dgmj; set => dgmj = value; }
+        /// <summary>
+        /// 备注
+        /// </summary>
         public string Bz { get => bz; set => bz = value; }
+        /// <summary>
+        /// 序号
+        /// </summary>
         public int Id { get => id; set => id = value; }
+        /// <summary>
+        /// 土地用途
+        /// </summary>
+        public string Tdyt { get => tdyt; set => tdyt = value; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using ManagerIS.Operation;
 
@@ -27,6 +28,16 @@ namespace ManagerIS {
             }
             
             MessageBox.Show("导入成功");
+        }
+
+        private void btnExport_Click(object sender, RoutedEventArgs e) {
+            //try {
+                DataOperation.DataExport(@"C:\Users\freak\Desktop\导出.xlsx");
+                MessageBox.Show("导出成功");
+           // } catch (Exception ex) {
+
+            //    MessageBox.Show(ex.Message);
+            //}
         }
     }
 }

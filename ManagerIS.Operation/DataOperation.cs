@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using System.Threading;
 
 namespace ManagerIS.Operation {
     public abstract class DataOperation {
@@ -102,7 +103,7 @@ namespace ManagerIS.Operation {
             foreach (Data data in datas) {
                 DataToMySQL(data);
                 foreach (NZYDK nzydk in data.Dk) {
-                    NzydkToMySQL(data.Guid,nzydk);
+                    NzydkToMySQL(data.Guid, nzydk);
                     foreach (GDDK gddk in nzydk.Gddk) {
                         GddkToMySQL(nzydk.Guid, gddk);
                     }
@@ -228,18 +229,19 @@ namespace ManagerIS.Operation {
             }
             return datas;
         }
-        
+
         private static Data ReadData(MySqlDataReader reader) {
             Data data = new Data();
             try {
                 data.Guid = reader.GetGuid("GUID");
                 data.Nzy = reader.GetString("PCMC");
                 data.Pzwh = reader.GetString("PZWH");
+                data.Pzrq = reader.GetDateTime("PZRQ");
             } catch (Exception) {
 
                 throw;
             }
-                return data;
+            return data;
         }
 
         public static void MySQLDKRead(Data data) {
@@ -250,27 +252,31 @@ namespace ManagerIS.Operation {
             //MySqlParameter[] pt = new MySqlParameter[] {
             //    new MySqlParameter("@NZY", data.Guid)
             //};
+
             MySqlDataReader reader;
             try {
                 reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
-            } catch (Exception) {
-                throw;
-            }
-            data.Dk = new List<NZYDK>();
-            while (reader.Read()) {
-                
-                NZYDK nzydk = new NZYDK();
-                nzydk.Dkmc = reader.GetString("DKMC");
-                nzydk.Guid = reader.GetGuid("GUID");
-                nzydk.Dkmj = reader.GetDecimal("DKMJ");
-                nzydk.Bz = (reader.IsDBNull(5)) ? "" : reader.GetString("BZ");
+                data.Dk = new List<NZYDK>();
+                while (reader.Read()) {
 
-                data.Dk.Add(nzydk);
-                
-            }
+                    NZYDK nzydk = new NZYDK();
+                    nzydk.Dkmc = reader.GetString("DKMC");
+                    nzydk.Guid = reader.GetGuid("GUID");
+                    nzydk.Dkmj = reader.GetDecimal("DKMJ");
+                    nzydk.Bz = (reader.IsDBNull(5)) ? "" : reader.GetString("BZ");
 
-           
+                    data.Dk.Add(nzydk);
+                }
+            } catch (Exception ex) {
+                if (ex.Message.Contains("Timeout")) {
+                    MySQLDKRead(data);
+                }
+            }
             
+            
+
+
+
         }
 
         public static void MySQLGDRead(NZYDK nzydk) {
@@ -300,24 +306,24 @@ namespace ManagerIS.Operation {
                 nzydk.Gddk.Add(gddk);
             }
 
-            
-                sql = new StringBuilder();
-                sql.Append(@"SELECT * FROM info.czfs where GUID='");
-                sql.Append(nzydk.Guid);
-                sql.Append(@"'");
 
-                try {
-                    reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
-                } catch (Exception) {
-                    throw;
+            sql = new StringBuilder();
+            sql.Append(@"SELECT * FROM info.czfs where GUID='");
+            sql.Append(nzydk.Guid);
+            sql.Append(@"'");
+
+            try {
+                reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (Exception) {
+                throw;
+            }
+            while (reader.Read()) {
+                for (int i = 0; i < nzydk.Czfs.Length; i++) {
+                    nzydk.Czfs[i] = reader.GetDecimal((i + 20).ToString());
                 }
-                while (reader.Read()) {
-                    for (int i = 0; i < nzydk.Czfs.Length; i++) {
-                        nzydk.Czfs[i] = reader.GetDecimal((i + 20).ToString());
-                    }
-                    nzydk.Sx = reader.GetInt32(34.ToString());
-                }
-            
+                nzydk.Sx = reader.GetInt32(34.ToString());
+            }
+
 
         }
 
@@ -365,7 +371,7 @@ namespace ManagerIS.Operation {
             sql.Append("SELECT count(*) from czfs where GUID=@GUID");
             MySqlParameter[] pt = new MySqlParameter[] { new MySqlParameter("@GUID", nzydk.Guid) };
             int exist = Int32.Parse(Helper.MySqlHelper.ExecuteScalar(Method.Conntection(), CommandType.Text, sql.ToString(), pt).ToString());
-            if (exist==0) {
+            if (exist == 0) {
                 sql = new StringBuilder();
                 sql.Append(@"INSERT INTO `info`.`czfs` (`");
                 for (int i = 0; i < nzydk.Czfs.Length; i++) {
@@ -411,7 +417,7 @@ namespace ManagerIS.Operation {
             }
         }
 
-        public static void  UpdateNzydk(NZYDK nzydk) {
+        public static void UpdateNzydk(NZYDK nzydk) {
             StringBuilder sql = new StringBuilder();
             sql.Append("update ");
             sql.Append("dkqk");
@@ -430,8 +436,118 @@ namespace ManagerIS.Operation {
                 throw ex;
             }
         }
+
+        public static void DataExport(string file) {
+            int num = 0;
+            List<Data> datas = MySQLRead();
+            foreach(Data data in datas) {
+                MySQLDKRead(data);
+                
+                //Thread.Sleep(200);
+                foreach(NZYDK nzydk in data.Dk) {
+                    MySQLGDRead(nzydk);
+                }
+                num += data.GetQuery();
+            }
+            ExcelExport(datas, file);
+        }
+
+        private static void ExcelExport(List<Data> datas, string file) {
+            ///初始化9张表格
+            DataTable[] result = new DataTable[9];
+            int[] index_year = new int[9];
+            ///初始化1-39列
+            foreach (DataTable dt in result) {
+                for (int index = 1; index < 40; index++) {
+                    dt.Columns.Add(index.ToString());
+                }
+            }
+            for (int i = 2009; i <= 2017; i++) {               
+                ///遍历年份
+                foreach(Data data in datas) {
+                    if (data.Pzrq.Year > 2008) {
+                       DataTable dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
+                        index_year[data.Pzrq.Year - 2009]++;
+                        foreach (NZYDK nzydk in data.Dk) {
+                            if (nzydk.Gddk.Count == 0) {
+                                dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
+                            }
+                            foreach (GDDK gddk in nzydk.Gddk) {
+
+                                dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
+
+                            }
+                        }
+                    }
+                }
+
+                ExcelHelper excel = new ExcelHelper(file);
+                int count = excel.DataTablesToExcel(result[i - 2009], (i + 2009).ToString(), true);
+
+            }
+            
+        }
+        /// <summary>
+        /// 生成行
+        /// </summary>
+        /// <param name="data">源数据</param>
+        /// <param name="index">序号</param>
+        /// <param name="dt">表</param>
+        /// <returns></returns>
+        private static DataRow DataRowInitialize(Data data,NZYDK nzydk,GDDK gddk,int index,DataTable dt) {
+            DataRow row = dt.NewRow();//读至供地数据开始写入行
+            row[0] = index;
+            row[1] = "海宁市";
+            row[2] = data.Nzy;
+            row[3] = ChangePCMC(data.Nzy);
+            row[4] = data.Pzwh;
+            row[5] = data.Pzrq.ToString("yyyy/M/d");
+            row[6] = nzydk.Dkmc;
+            row[7] = nzydk.Dkmj;
+            row[8] = "是";
+            if (gddk !=null) {
+                row[9] = gddk.Dzjgh;
+                row[10] = gddk.Xmmc;
+                row[11] = gddk.Gdmj;
+                row[12] = gddk.Tdyt;
+                row[13] = nzydk.SYMJ();
+                row[38] = nzydk.Bz + @"|" + gddk.Bz;
+            } else {
+                row[38] = nzydk.Bz;
+            }
+            
+            for (int i = 0; i < 14; i++) {
+                row[i + 19] = nzydk.Czfs[i];
+            }
+            if (nzydk.Sx!=0) {
+                row[32 + nzydk.Sx] = "√";
+            }
+            
+            return row;
+               
+        }
+        /// <summary>
+        /// 根据批次名称选择指标类型
+        /// </summary>
+        /// <param name="pcmc">批次名称</param>
+        /// <returns></returns>
+        private static string ChangePCMC(string pcmc) {
+            string zblx="";//批标类型
+            if (pcmc.Contains("批次") ){
+                zblx = "计划指标";
+            } else if (pcmc.Contains("盘活")) {
+                zblx = "盘活指标";
+            } else if (pcmc.Contains("增减")) {
+                zblx = "增减挂钩指标";
+            } else if (pcmc.Contains("整理")) {
+                zblx = "折抵指标";
+            } else if (pcmc.Contains("复耕")) {
+                zblx = "建设用地复垦指标";
+            }
+            return zblx;
+        }
     }
-    }
+}
 
 
 
