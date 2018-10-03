@@ -462,10 +462,56 @@ namespace ManagerIS.Operation {
                 throw new Exception(ex.Message);
             }
             while (reader.Read()) {
+                ///初始化DATA
                 Data data = new Data();
-                data.Guid = reader.GetGuid("GUID");
-                data.Nzy = reader.GetString("PCMC");
-                datas.Add(data.Guid,data);
+                ///读取批次GUID
+                Guid guid= reader.GetGuid("GUID");
+                if (datas.Contains(guid) ){///如果该批次存在
+                    data = (Data)datas[guid];
+                } else {
+                    data.Guid = guid;
+                    data.Nzy = reader.GetString("PCMC");///批次名称
+                    data.Pzwh = reader.GetString("PZWH");///批准文号
+                    data.Pzrq = reader.GetDateTime("PZRQ");///批准日期
+                    datas.Add(data.Guid, data);
+                }
+
+                
+                string dkmc = reader.GetString("DKMC");//地块名称
+                //NZYDK nzydk = data.IsExist(dkmc);//是否已存在该地块
+                NZYDK nzydk = new NZYDK();
+                bool unExist = true;//判断是否已存在该 农转用地块
+                foreach (NZYDK new_nzydk in data.Dk) {
+                    if (new_nzydk.Dkmc==dkmc) {
+                        nzydk = new_nzydk;
+                        unExist = false;
+                    }
+                }
+                if (unExist) {//如果不存在
+                    nzydk.Guid = reader.GetGuid("DKGUID");//农转用地块GUID
+                    nzydk.Dkmj = reader.GetDecimal("DKMJ");//地块面积
+                    ///读取处置方式内容20-34列
+                    for (int i = 20; i < 34; i++) {
+                        nzydk.Czfs[i - 20] = (reader.IsDBNull(i - 4)) ? 0 : reader.GetDecimal(i.ToString());
+                    }
+                    nzydk.Sx = (reader.IsDBNull(30)) ? 0 : reader.GetInt32("34");
+                    data.Dk.Add(nzydk);
+                }
+                string yddw = (reader.IsDBNull(11)) ? "" : reader.GetString("YDDW");//获取用地单位，如果不存在则为空
+                if (!string.IsNullOrEmpty(yddw) ){//始果用地单位存在
+                    GDDK gddk = new GDDK();
+                    gddk.Xmmc = yddw;
+                    gddk.Dzjgh= (reader.IsDBNull(10)) ? "" : reader.GetString("DZJGH");//获取电子监管号，如果不存在则为空
+                    gddk.Gdmj = reader.GetDecimal("GDMJ");//获取供地面积
+                    gddk.Dgmj = reader.GetDecimal("DG");//获取带供面积
+                    gddk.Tdyt= (reader.IsDBNull(13)) ? "" : reader.GetString("TDYT");//获取电子监管号，如果不存在则为空
+                    gddk.Bz= ((reader.IsDBNull(8)) ? "" : reader.GetString("DKBZ"))
+                        +"|"+
+                        ((reader.IsDBNull(15)) ? "" : reader.GetString("BZ"));//获取备注，如果不存在则为空
+                    nzydk.Gddk.Add(gddk);
+                }
+
+
             }
 
 
@@ -473,6 +519,7 @@ namespace ManagerIS.Operation {
             foreach (Data data in datas.Values) {
                 result.Add(data);
             }
+            
             return result;
         }
 
@@ -486,13 +533,20 @@ namespace ManagerIS.Operation {
         private static void ExcelExport(List<Data> datas, string file) {
             ///初始化9张表格
             DataTable[] result = new DataTable[9];
-            int[] index_year = new int[9];
-            ///初始化1-39列
-            foreach (DataTable dt in result) {
+            int[] index_year = new int[9];            
+            ///初始化9张表
+            for (int i = 0; i < 9; i++) {
+                result[i] = new DataTable();
+                ///初始化1-39列
                 for (int index = 1; index < 40; index++) {
-                    dt.Columns.Add(index.ToString());
+                    result[i].Columns.Add(index.ToString());
                 }
+
             }
+            //foreach (DataTable dt in result) {
+            //    dt = new DataTable();
+                
+            //}
             for (int i = 2009; i <= 2017; i++) {               
                 ///遍历年份
                 foreach(Data data in datas) {
@@ -512,11 +566,16 @@ namespace ManagerIS.Operation {
                     }
                 }
 
-                ExcelHelper excel = new ExcelHelper(file);
-                int count = excel.DataTablesToExcel(result[i - 2009], (i + 2009).ToString(), true);
+                
 
             }
+
             
+            for (int i = 0; i < 9; i++) {
+                ExcelHelper excel = new ExcelHelper(file + (i+2009)+".xlsx");
+                int count = excel.DataTableToExcel(result[i], (i+2009).ToString(), true);
+            }
+
         }
         /// <summary>
         /// 生成行
@@ -534,21 +593,21 @@ namespace ManagerIS.Operation {
             row[4] = data.Pzwh;
             row[5] = data.Pzrq.ToString("yyyy/M/d");
             row[6] = nzydk.Dkmc;
-            row[7] = nzydk.Dkmj;
+            row[7] = nzydk.Dkmj*15;
             row[8] = "是";
             if (gddk !=null) {
                 row[9] = gddk.Dzjgh;
                 row[10] = gddk.Xmmc;
-                row[11] = gddk.Gdmj;
+                row[11] = gddk.Gdmj*15;
                 row[12] = gddk.Tdyt;
                 row[13] = nzydk.SYMJ();
-                row[38] = nzydk.Bz + @"|" + gddk.Bz;
+                row[38] = gddk.Bz;//nzydk.Bz + @"|" + gddk.Bz;
             } else {
                 row[38] = nzydk.Bz;
             }
             
             for (int i = 0; i < 14; i++) {
-                row[i + 19] = nzydk.Czfs[i];
+                row[i + 19] = nzydk.Czfs[i]*15;
             }
             if (nzydk.Sx!=0) {
                 row[32 + nzydk.Sx] = "√";
