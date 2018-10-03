@@ -63,6 +63,7 @@ namespace ManagerIS.Common
             conn.Append(PWD);
             conn.Append(";charset=");
             conn.Append(CHARSET);
+            conn.Append(";Max Pool Size=30000");
             return conn.ToString();
 
         }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Threading;
+using System.Collections;
 
 namespace ManagerIS.Operation {
     public abstract class DataOperation {
@@ -444,20 +445,44 @@ namespace ManagerIS.Operation {
         }
 
         public static void DataExport(string file) {
-            int num = 0;
-            List<Data> datas = MySQLRead();
-            foreach(Data data in datas) {
-                MySQLDKRead(data);
-                
-                //Thread.Sleep(200);
-                foreach(NZYDK nzydk in data.Dk) {
-                    MySQLGDRead(nzydk);
-                }
-                num += data.GetQuery();
-            }
+            List<Data> datas = MySQLViewRead();
+            
             ExcelExport(datas, file);
         }
 
+
+        private static List<Data> MySQLViewRead() {
+            Hashtable datas = new Hashtable();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@"SELECT * FROM info.nzy_view;");
+            MySqlDataReader reader;
+            try {
+                reader = Helper.MySqlHelper.ExecuteReader(Method.Conntection(), CommandType.Text, sql.ToString(), null);
+            } catch (Exception ex) {
+                throw new Exception(ex.Message);
+            }
+            while (reader.Read()) {
+                Data data = new Data();
+                data.Guid = reader.GetGuid("GUID");
+                data.Nzy = reader.GetString("PCMC");
+                datas.Add(data.Guid,data);
+            }
+
+
+            List<Data> result = new List<Data>();
+            foreach (Data data in datas.Values) {
+                result.Add(data);
+            }
+            return result;
+        }
+
+
+
+        /// <summary>
+        /// 输出EXCEL
+        /// </summary>
+        /// <param name="datas">数据</param>
+        /// <param name="file">保存文件名</param>
         private static void ExcelExport(List<Data> datas, string file) {
             ///初始化9张表格
             DataTable[] result = new DataTable[9];
