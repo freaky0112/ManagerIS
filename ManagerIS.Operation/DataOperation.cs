@@ -276,8 +276,8 @@ namespace ManagerIS.Operation {
                     MySQLDKRead(data);
                 }
             }
-            
-            
+
+
 
 
 
@@ -361,7 +361,7 @@ namespace ManagerIS.Operation {
                 new MySqlParameter("@GDMJ",gddk.Gdmj),
                 new MySqlParameter("@DG",gddk.Dgmj),
                 new MySqlParameter("@BZ",gddk.Bz)
-                
+
             };
 
             try {
@@ -446,7 +446,7 @@ namespace ManagerIS.Operation {
 
         public static void DataExport(string file) {
             List<Data> datas = MySQLViewRead();
-            
+
             ExcelExport(datas, file);
         }
 
@@ -465,8 +465,8 @@ namespace ManagerIS.Operation {
                 ///初始化DATA
                 Data data = new Data();
                 ///读取批次GUID
-                Guid guid= reader.GetGuid("GUID");
-                if (datas.Contains(guid) ){///如果该批次存在
+                Guid guid = reader.GetGuid("GUID");
+                if (datas.Contains(guid)) {///如果该批次存在
                     data = (Data)datas[guid];
                 } else {
                     data.Guid = guid;
@@ -476,19 +476,20 @@ namespace ManagerIS.Operation {
                     datas.Add(data.Guid, data);
                 }
 
-                
+
                 string dkmc = reader.GetString("DKMC");//地块名称
                 //NZYDK nzydk = data.IsExist(dkmc);//是否已存在该地块
                 NZYDK nzydk = new NZYDK();
                 bool unExist = true;//判断是否已存在该 农转用地块
                 foreach (NZYDK new_nzydk in data.Dk) {
-                    if (new_nzydk.Dkmc==dkmc) {
+                    if (new_nzydk.Dkmc == dkmc) {
                         nzydk = new_nzydk;
                         unExist = false;
                     }
                 }
                 if (unExist) {//如果不存在
                     nzydk.Guid = reader.GetGuid("DKGUID");//农转用地块GUID
+                    nzydk.Dkmc = reader.GetString("DKMC");//地块名称
                     nzydk.Dkmj = reader.GetDecimal("DKMJ");//地块面积
                     ///读取处置方式内容20-34列
                     for (int i = 20; i < 34; i++) {
@@ -498,15 +499,15 @@ namespace ManagerIS.Operation {
                     data.Dk.Add(nzydk);
                 }
                 string yddw = (reader.IsDBNull(11)) ? "" : reader.GetString("YDDW");//获取用地单位，如果不存在则为空
-                if (!string.IsNullOrEmpty(yddw) ){//始果用地单位存在
+                if (!string.IsNullOrEmpty(yddw)) {//始果用地单位存在
                     GDDK gddk = new GDDK();
                     gddk.Xmmc = yddw;
-                    gddk.Dzjgh= (reader.IsDBNull(10)) ? "" : reader.GetString("DZJGH");//获取电子监管号，如果不存在则为空
+                    gddk.Dzjgh = (reader.IsDBNull(10)) ? "" : reader.GetString("DZJGH");//获取电子监管号，如果不存在则为空
                     gddk.Gdmj = reader.GetDecimal("GDMJ");//获取供地面积
                     gddk.Dgmj = reader.GetDecimal("DG");//获取带供面积
-                    gddk.Tdyt= (reader.IsDBNull(13)) ? "" : reader.GetString("TDYT");//获取电子监管号，如果不存在则为空
-                    gddk.Bz= ((reader.IsDBNull(8)) ? "" : reader.GetString("DKBZ"))
-                        +"|"+
+                    gddk.Tdyt = (reader.IsDBNull(13)) ? "" : reader.GetString("TDYT");//获取电子监管号，如果不存在则为空
+                    gddk.Bz = ((reader.IsDBNull(8)) ? "" : reader.GetString("DKBZ"))
+                        + "|" +
                         ((reader.IsDBNull(15)) ? "" : reader.GetString("BZ"));//获取备注，如果不存在则为空
                     nzydk.Gddk.Add(gddk);
                 }
@@ -519,7 +520,7 @@ namespace ManagerIS.Operation {
             foreach (Data data in datas.Values) {
                 result.Add(data);
             }
-            
+
             return result;
         }
 
@@ -533,7 +534,7 @@ namespace ManagerIS.Operation {
         private static void ExcelExport(List<Data> datas, string file) {
             ///初始化9张表格
             DataTable[] result = new DataTable[9];
-            int[] index_year = new int[9];            
+            int[] index_year = new int[9];
             ///初始化9张表
             for (int i = 0; i < 9; i++) {
                 result[i] = new DataTable();
@@ -545,35 +546,40 @@ namespace ManagerIS.Operation {
             }
             //foreach (DataTable dt in result) {
             //    dt = new DataTable();
-                
+
             //}
-            for (int i = 2009; i <= 2017; i++) {               
-                ///遍历年份
-                foreach(Data data in datas) {
+            DataTable dt = new DataTable();
+            foreach (Data data in datas) {
+                for (int i = 2009; i <= 2017; i++) {
+                    ///遍历年份
+
                     if (data.Pzrq.Year > 2008) {
-                       DataTable dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
+                        dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
                         index_year[data.Pzrq.Year - 2009]++;
-                        foreach (NZYDK nzydk in data.Dk) {
-                            if (nzydk.Gddk.Count == 0) {
-                                dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
-                            }
-                            foreach (GDDK gddk in nzydk.Gddk) {
-
-                                dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
-
-                            }
-                        }
                     }
                 }
 
-                
+                foreach (NZYDK nzydk in data.Dk) {
+                    if (nzydk.Gddk.Count == 0) {
+                        dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
+                    }
+                    foreach (GDDK gddk in nzydk.Gddk) {
+
+                        dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
+
+                    }
+                }
+
+
+
+
 
             }
 
-            
+
             for (int i = 0; i < 9; i++) {
-                ExcelHelper excel = new ExcelHelper(file + (i+2009)+".xlsx");
-                int count = excel.DataTableToExcel(result[i], (i+2009).ToString(), true);
+                ExcelHelper excel = new ExcelHelper(file + (i + 2009) + ".xlsx");
+                int count = excel.DataTableToExcel(result[i], (i + 2009).ToString(), true);
             }
 
         }
@@ -584,7 +590,7 @@ namespace ManagerIS.Operation {
         /// <param name="index">序号</param>
         /// <param name="dt">表</param>
         /// <returns></returns>
-        private static DataRow DataRowInitialize(Data data,NZYDK nzydk,GDDK gddk,int index,DataTable dt) {
+        private static DataRow DataRowInitialize(Data data, NZYDK nzydk, GDDK gddk, int index, DataTable dt) {
             DataRow row = dt.NewRow();//读至供地数据开始写入行
             row[0] = index;
             row[1] = "海宁市";
@@ -593,28 +599,28 @@ namespace ManagerIS.Operation {
             row[4] = data.Pzwh;
             row[5] = data.Pzrq.ToString("yyyy/M/d");
             row[6] = nzydk.Dkmc;
-            row[7] = nzydk.Dkmj*15;
+            row[7] = nzydk.Dkmj * 15;
             row[8] = "是";
-            if (gddk !=null) {
+            if (gddk != null) {
                 row[9] = gddk.Dzjgh;
                 row[10] = gddk.Xmmc;
-                row[11] = gddk.Gdmj*15;
+                row[11] = gddk.Gdmj * 15;
                 row[12] = gddk.Tdyt;
                 row[13] = nzydk.SYMJ();
                 row[38] = gddk.Bz;//nzydk.Bz + @"|" + gddk.Bz;
             } else {
                 row[38] = nzydk.Bz;
             }
-            
+
             for (int i = 0; i < 14; i++) {
-                row[i + 19] = nzydk.Czfs[i]*15;
+                row[i + 19] = nzydk.Czfs[i] * 15;
             }
-            if (nzydk.Sx!=0) {
+            if (nzydk.Sx != 0) {
                 row[32 + nzydk.Sx] = "√";
             }
-            
+
             return row;
-               
+
         }
         /// <summary>
         /// 根据批次名称选择指标类型
@@ -622,8 +628,8 @@ namespace ManagerIS.Operation {
         /// <param name="pcmc">批次名称</param>
         /// <returns></returns>
         private static string ChangePCMC(string pcmc) {
-            string zblx="";//批标类型
-            if (pcmc.Contains("批次") ){
+            string zblx = "";//批标类型
+            if (pcmc.Contains("批次")) {
                 zblx = "计划指标";
             } else if (pcmc.Contains("盘活")) {
                 zblx = "盘活指标";

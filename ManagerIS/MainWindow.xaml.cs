@@ -32,8 +32,10 @@ namespace ManagerIS {
 
         private void btnExport_Click(object sender, RoutedEventArgs e) {
             //try {
-            //DataOperation.DataExport(@"C:\Users\freak\Desktop\");
-            ExcelOperation.MergeExcel(@"C:\Users\freak\Desktop\");
+            DataOperation.DataExport(@"\\Mac\Home\Desktop\");
+            ExcelOperation.MergeExcel(@"\\Mac\Home\Desktop\");
+            //ExcelOperation.FormateExcel(@"\\Mac\Home\Desktop\导出.xlsx");
+
             MessageBox.Show("导出成功");
             // } catch (Exception ex) {
 
