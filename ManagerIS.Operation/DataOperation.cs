@@ -241,6 +241,7 @@ namespace ManagerIS.Operation {
                 data.Nzy = reader.GetString("PCMC");
                 data.Pzwh = reader.GetString("PZWH");
                 data.Pzrq = reader.GetDateTime("PZRQ");
+                data.Pzmj = reader.GetDecimal("PZMJ");
             } catch (Exception) {
 
                 throw;
@@ -473,6 +474,7 @@ namespace ManagerIS.Operation {
                     data.Nzy = reader.GetString("PCMC");///批次名称
                     data.Pzwh = reader.GetString("PZWH");///批准文号
                     data.Pzrq = reader.GetDateTime("PZRQ");///批准日期
+                    data.Pzmj = reader.GetDecimal("PZMJ");//批准面积
                     datas.Add(data.Guid, data);
                 }
 
@@ -641,6 +643,82 @@ namespace ManagerIS.Operation {
                 zblx = "建设用地复垦指标";
             }
             return zblx;
+        }
+
+
+
+        public static void DataCheck(string file) {
+            List<Data> datas = MySQLViewRead();
+            DataTable dt = new DataTable();
+            DataTable dt_pc = new DataTable();
+            dt_pc.Columns.Add("批次名");
+            dt_pc.Columns.Add("批准面积");
+            dt_pc.Columns.Add("当前面积");
+            dt_pc.Columns.Add("批准时间");
+            dt.Columns.Add("批次名");
+            dt.Columns.Add("地块名");
+            dt.Columns.Add("剩于面积");
+            foreach (Data data in datas) {
+                //if (data.Pzmj != data.GetArea()) {
+                    DataRow dataRow = dt_pc.NewRow();
+                    dataRow[0] = data.Nzy;
+                dataRow[1] = ChangePCMC(data.Nzy);
+                    //dataRow[1] = data.Pzmj;
+                    dataRow[2] = data.GetArea();
+                dataRow[3] = data.Pzrq.ToLongDateString();
+                    dt_pc.Rows.Add(dataRow);
+
+                //}
+
+
+
+                foreach (NZYDK nzydk in data.Dk) {
+                    if (nzydk.Dkmj - nzydk.GetLeftArea() != nzydk.GetWGYY()) {
+                        DataRow dr = dt.NewRow();
+                        dr[0] = data.Nzy;
+                        dr[1] = nzydk.Dkmc;
+                        dr[2] = nzydk.Dkmj - nzydk.GetLeftArea();
+                        dt.Rows.Add(dr);
+                    }
+
+
+                }
+            }
+            ExcelHelper excel = new ExcelHelper(file + "检查.xlsx");
+            int count = excel.DataTableToExcel(dt, "检查", true);
+            excel = new ExcelHelper(file + "自查.xlsx");
+            count = excel.DataTableToExcel(dt_pc, "自查", true);
+
+        }
+
+
+        public static void ImportDZJGH(string file) {
+            ExcelHelper excelHelper = new ExcelHelper(file);
+            DataTable dt = excelHelper.ExcelToDataTable("SQL Results", true);
+            for (int i = 0; i < dt.Rows.Count; i++) {
+                DataRow dr = dt.Rows[i];
+                string dzjgh = dr[4].ToString();
+                string tdyt = dr[5].ToString();
+                StringBuilder sql = new StringBuilder();
+                sql.Append("update ");
+                sql.Append("gdqk");
+                sql.Append(" set ");
+                sql.Append("TDYT=@TDYT ");
+                sql.Append("where ");
+                sql.Append("DZJGH= @DZJGH ");
+                MySqlParameter[] pt = new MySqlParameter[] {
+                new MySqlParameter("@DZJGH",dzjgh),
+                new MySqlParameter("@TDYT",tdyt)
+
+            };
+
+                try {
+                    Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
+                } catch (MySqlException ex) {
+                    throw ex;
+                }
+
+            }
         }
     }
 }

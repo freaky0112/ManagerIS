@@ -23,12 +23,14 @@ namespace ManagerIS.Common {
         private string pzwh;
         private DateTime pzrq;
         private List<NZYDK> dk;
+        private Decimal pzmj;
 
         public Guid Guid { get => guid; set => guid = value; }
         public string Nzy { get => nzy; set => nzy = value; }
         public string Pzwh { get => pzwh; set => pzwh = value; }
         public List<NZYDK> Dk { get => dk; set => dk = value; }
         public DateTime Pzrq { get => pzrq; set => pzrq = value; }
+        public decimal Pzmj { get => pzmj; set => pzmj = value; }
 
         public bool Equals(Data data) {
             return this.pzwh.Equals(data.pzwh);
@@ -151,7 +153,7 @@ namespace ManagerIS.Common {
             }
             return true;
         }
-        private Decimal GetLeftArea() {
+        public Decimal GetLeftArea() {
             Decimal area=0;
             foreach (GDDK gd in gddk) {
                 area += gd.Gdmj;
@@ -159,7 +161,7 @@ namespace ManagerIS.Common {
             return area;
         }
 
-        private Decimal GetWGYY() {
+        public Decimal GetWGYY() {
             Decimal area = 0;
             for (int i = 0; i < 8; i++) {
                 area += czfs[i];
