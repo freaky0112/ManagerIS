@@ -36,7 +36,7 @@ namespace ManagerIS.Operation {
             for (int i = 2009; i <= 2017; i++) {
                 File.Delete(file + i.ToString() + ".xlsx");
             }
-            FormateExcel(file + "导出.xlsx");
+            //FormateExcel(file + "导出.xlsx");
         }
         /// <summary>
         /// 格式化表格

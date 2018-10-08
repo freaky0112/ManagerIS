@@ -24,17 +24,17 @@ namespace ManagerIS {
         private void btnImport_Click(object sender, RoutedEventArgs e) {
             int year = int.Parse(tbxYear.Text);
             //for (int i = 2009; i <= 2018; i++) {
-            DataOperation.ExcelToMysql(tbxImportUrl.Text, year);
+            //DataOperation.ExcelToMysql(tbxImportUrl.Text, year);
             //}
-            //DataOperation.ImportDZJGH(@"\\Mac\Home\Desktop\海宁.xls");
+            DataOperation.ImportDZJGH(@"\\Mac\Home\Desktop\海宁.xls");
             MessageBox.Show("导入成功");
         }
 
         private void btnExport_Click(object sender, RoutedEventArgs e) {
             //try {
-            DataOperation.DataCheck(@"\\Mac\Home\Desktop\");
-            //DataOperation.DataExport(@"\\Mac\Home\Desktop\");
-            //ExcelOperation.MergeExcel(@"\\Mac\Home\Desktop\");
+            //DataOperation.DataCheck(@"\\Mac\Home\Desktop\");
+            DataOperation.DataExport(@"\\Mac\Home\Desktop\");
+            ExcelOperation.MergeExcel(@"\\Mac\Home\Desktop\");
             ////ExcelOperation.FormateExcel(@"\\Mac\Home\Desktop\导出.xlsx");
 
             MessageBox.Show("导出成功");

@@ -453,7 +453,8 @@ namespace ManagerIS.Operation {
 
 
         private static List<Data> MySQLViewRead() {
-            Hashtable datas = new Hashtable();
+            //Hashtable datas = new Hashtable();
+            List<Data> datas = new List<Data>();
             StringBuilder sql = new StringBuilder();
             sql.Append(@"SELECT * FROM info.nzy_view;");
             MySqlDataReader reader;
@@ -467,15 +468,25 @@ namespace ManagerIS.Operation {
                 Data data = new Data();
                 ///读取批次GUID
                 Guid guid = reader.GetGuid("GUID");
-                if (datas.Contains(guid)) {///如果该批次存在
-                    data = (Data)datas[guid];
-                } else {
+                bool unExistData = true;//判断是是否存在该批次
+
+                foreach (Data origin in datas) {
+                    if (origin.Guid==guid) {
+                        data = origin;
+                        unExistData = false;
+                        break;
+                    }
+                }
+
+
+
+                if (unExistData) {//如果该批次存在
                     data.Guid = guid;
-                    data.Nzy = reader.GetString("PCMC");///批次名称
-                    data.Pzwh = reader.GetString("PZWH");///批准文号
-                    data.Pzrq = reader.GetDateTime("PZRQ");///批准日期
+                    data.Nzy = reader.GetString("PCMC");//批次名称
+                    data.Pzwh = reader.GetString("PZWH");//批准文号
+                    data.Pzrq = reader.GetDateTime("PZRQ");//批准日期
                     data.Pzmj = reader.GetDecimal("PZMJ");//批准面积
-                    datas.Add(data.Guid, data);
+                    datas.Add(data);
                 }
 
 
@@ -518,12 +529,12 @@ namespace ManagerIS.Operation {
             }
 
 
-            List<Data> result = new List<Data>();
-            foreach (Data data in datas.Values) {
-                result.Add(data);
-            }
+            //List<Data> result = new List<Data>();
+            //foreach (Data data in datas.Values) {
+            //    result.Add(data);
+            //}
 
-            return result;
+            return datas;
         }
 
 
