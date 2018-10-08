@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Threading;
 using System.Collections;
+using System.IO;
 
 namespace ManagerIS.Operation {
     public abstract class DataOperation {
@@ -546,53 +547,68 @@ namespace ManagerIS.Operation {
         /// <param name="file">保存文件名</param>
         private static void ExcelExport(List<Data> datas, string file) {
             ///初始化9张表格
-            DataTable[] result = new DataTable[9];
-            int[] index_year = new int[9];
+            DataTable[] result = new DataTable[10];
+            int[] index_year = new int[10];
             ///初始化9张表
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 10; i++) {
                 result[i] = new DataTable();
                 ///初始化1-39列
                 for (int index = 1; index < 40; index++) {
                     result[i].Columns.Add(index.ToString());
                 }
-
+                index_year[i] = 0;
             }
             //foreach (DataTable dt in result) {
             //    dt = new DataTable();
 
             //}
             DataTable dt = new DataTable();
+            DataTable dt_result = result[9];
+            string pcmc = "";
             foreach (Data data in datas) {
                 for (int i = 2009; i <= 2017; i++) {
                     ///遍历年份
 
                     if (data.Pzrq.Year > 2008) {
                         dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
-                        index_year[data.Pzrq.Year - 2009]++;
+                        if (data.Nzy==pcmc) {
+                            index_year[data.Pzrq.Year - 2009]++;
+
+                        } else {
+                            pcmc = data.Nzy;
+                        }
+                        
+                        index_year[9]++;
                     }
                 }
 
                 foreach (NZYDK nzydk in data.Dk) {
                     if (nzydk.Gddk.Count == 0) {
                         dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
+                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[9], dt_result));//导入汇总表
                     }
                     foreach (GDDK gddk in nzydk.Gddk) {
 
                         dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
+                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[9], dt_result));//导入汇总表
 
                     }
+
                 }
-
-
-
-
-
+            }
+            if (File.Exists(file + "导出.xlsx")) {
+                File.Delete(file + "导出.xlsx");
             }
 
 
+            ExcelHelper excel = new ExcelHelper(file +  "导出.xlsx");
+            int count = excel.DataTableToExcel(dt_result, "汇总", true);
+            excel.Dispose();
+
+
             for (int i = 0; i < 9; i++) {
-                ExcelHelper excel = new ExcelHelper(file + (i + 2009) + ".xlsx");
-                int count = excel.DataTableToExcel(result[i], (i + 2009).ToString(), true);
+                 excel = new ExcelHelper(file + (i + 2009) + ".xlsx");
+                count = excel.DataTableToExcel(result[i], (i + 2009).ToString(), true);
             }
 
         }
@@ -619,7 +635,7 @@ namespace ManagerIS.Operation {
                 row[10] = gddk.Xmmc;
                 row[11] = gddk.Gdmj * 15;
                 row[12] = gddk.Tdyt;
-                row[13] = nzydk.SYMJ();
+                row[13] = data.GetSYMJ()*15;//批次剩余面积
                 row[38] = gddk.Bz;//nzydk.Bz + @"|" + gddk.Bz;
             } else {
                 row[38] = nzydk.Bz;
@@ -631,7 +647,7 @@ namespace ManagerIS.Operation {
             if (nzydk.Sx != 0) {
                 row[32 + nzydk.Sx] = "√";
             }
-
+            
             return row;
 
         }

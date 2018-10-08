@@ -36,7 +36,7 @@ namespace ManagerIS.Operation {
             for (int i = 2009; i <= 2017; i++) {
                 File.Delete(file + i.ToString() + ".xlsx");
             }
-            //FormateExcel(file + "导出.xlsx");
+            FormateExcel(file + "导出.xlsx");
         }
         /// <summary>
         /// 格式化表格
@@ -50,7 +50,7 @@ namespace ManagerIS.Operation {
             Workbooks workbooks = app.Workbooks;
             _Workbook workbook = workbooks.Add(file);
             Sheets sheets = workbook.Sheets;
-            for (int i = 2; i <= 10; i++) {//读取2009-2017表格，首张为空
+            for (int i = 2; i <= 2; i++) {//读取2009-2017表格，首张为汇总表
                 Worksheet worksheet = (Worksheet)sheets.get_Item(i);
                 int recordCount = 2;//从第二行开始判断
                 //查找数据行数
@@ -96,7 +96,8 @@ namespace ManagerIS.Operation {
                             sheet.Range[sheet.Cells[i, col - 1], sheet.Cells[j - 1, col - 1]].Merge(Type.Missing);
                             //合并箱9列
                             sheet.Range[sheet.Cells[i, 9], sheet.Cells[j - 1, 9]].Merge(Type.Missing);
-
+                            //合并第14列
+                            sheet.Range[sheet.Cells[i, 14], sheet.Cells[j - 1, 14]].Merge(Type.Missing);
                             for (int k = 1; k <= 3; k++) {//合并4、5、6列
                                 sheet.Range[sheet.Cells[i, col + k], sheet.Cells[j - 1, col + k]].Merge(Type.Missing);
                             }

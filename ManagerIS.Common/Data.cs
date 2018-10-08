@@ -80,6 +80,17 @@ namespace ManagerIS.Common {
             }
             return num;
         }
+        /// <summary>
+        /// 批次剩余面积
+        /// </summary>
+        /// <returns></returns>
+        public Decimal GetSYMJ() {
+            Decimal area = 0;
+            foreach (NZYDK nzydk in dk) {
+                area += nzydk.SYMJ();
+            }
+            return area;
+        }
 
     }
 
@@ -127,13 +138,13 @@ namespace ManagerIS.Common {
         /// 处置方式
         /// </summary>
         public decimal[] Czfs { get => czfs; set => czfs = value; }
-
+        /// <summary>
+        /// 地块剩余面积
+        /// </summary>
+        /// <returns></returns>
         public Decimal SYMJ() {
-            decimal area = 0;
-            foreach (GDDK gd in Gddk) {
-                area += gd.Gdmj;
-            }
-            return area;
+
+            return dkmj - GetLeftArea() ;
         }
 
         public bool Check() {
@@ -153,6 +164,10 @@ namespace ManagerIS.Common {
             }
             return true;
         }
+        /// <summary>
+        /// 已供面积
+        /// </summary>
+        /// <returns></returns>
         public Decimal GetLeftArea() {
             Decimal area=0;
             foreach (GDDK gd in gddk) {
