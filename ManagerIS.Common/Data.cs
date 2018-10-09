@@ -144,17 +144,17 @@ namespace ManagerIS.Common {
         /// <returns></returns>
         public Decimal SYMJ() {
 
-            return dkmj - GetLeftArea() ;
+            return dkmj - GetYGMJ() ;
         }
 
         public bool Check() {
             try {
-                if (dkmj - GetLeftArea() == GetWGYY() && GetWGYY() == GetCZFS()) {
+                if (dkmj - GetYGMJ() == GetWGYY() && GetWGYY() == GetCZFS()) {
 
                 } else {
                     throw new Exception("未供面积与处理面积不一致");
                 }
-                if (dkmj - GetLeftArea()>0&&sx==0) {
+                if (dkmj - GetYGMJ()>0&&sx==0) {
                     throw new Exception("未填写处理时间");
                 } 
                 
@@ -168,7 +168,7 @@ namespace ManagerIS.Common {
         /// 已供面积
         /// </summary>
         /// <returns></returns>
-        public Decimal GetLeftArea() {
+        public Decimal GetYGMJ() {
             Decimal area=0;
             foreach (GDDK gd in gddk) {
                 area += gd.Gdmj;
@@ -184,7 +184,7 @@ namespace ManagerIS.Common {
             return area;
         }
 
-        private Decimal GetCZFS() {
+        public Decimal GetCZFS() {
             Decimal area = 0;
             for (int i = 8; i < 14; i++) {
                 area += czfs[i];

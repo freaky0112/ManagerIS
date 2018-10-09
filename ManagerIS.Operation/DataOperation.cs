@@ -472,7 +472,7 @@ namespace ManagerIS.Operation {
                 bool unExistData = true;//判断是是否存在该批次
 
                 foreach (Data origin in datas) {
-                    if (origin.Guid==guid) {
+                    if (origin.Guid == guid) {
                         data = origin;
                         unExistData = false;
                         break;
@@ -566,34 +566,39 @@ namespace ManagerIS.Operation {
             DataTable dt_result = result[9];
             string pcmc = "";
             foreach (Data data in datas) {
-                for (int i = 2009; i <= 2017; i++) {
-                    ///遍历年份
 
-                    if (data.Pzrq.Year > 2008) {
-                        dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
-                        if (data.Nzy==pcmc) {
-                            index_year[data.Pzrq.Year - 2009]++;
+                if (data.Nzy.Contains("盘活")) {
 
-                        } else {
-                            pcmc = data.Nzy;
+
+                    for (int i = 2009; i <= 2017; i++) {
+                        ///遍历年份
+
+                        if (data.Pzrq.Year > 2008) {
+                            dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
+                            if (data.Nzy == pcmc) {
+                                index_year[data.Pzrq.Year - 2009]++;
+
+                            } else {
+                                pcmc = data.Nzy;
+                            }
+
+                            index_year[9]++;
                         }
-                        
-                        index_year[9]++;
-                    }
-                }
-
-                foreach (NZYDK nzydk in data.Dk) {
-                    if (nzydk.Gddk.Count == 0) {
-                        dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
-                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[9], dt_result));//导入汇总表
-                    }
-                    foreach (GDDK gddk in nzydk.Gddk) {
-
-                        dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
-                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[9], dt_result));//导入汇总表
-
                     }
 
+                    foreach (NZYDK nzydk in data.Dk) {
+                        if (nzydk.Gddk.Count == 0) {
+                            dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
+                            dt_result.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[9], dt_result));//导入汇总表
+                        }
+                        foreach (GDDK gddk in nzydk.Gddk) {
+
+                            dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
+                            dt_result.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[9], dt_result));//导入汇总表
+
+                        }
+
+                    }
                 }
             }
             if (File.Exists(file + "导出.xlsx")) {
@@ -601,13 +606,13 @@ namespace ManagerIS.Operation {
             }
 
 
-            ExcelHelper excel = new ExcelHelper(file +  "导出.xlsx");
+            ExcelHelper excel = new ExcelHelper(file + "导出.xlsx");
             int count = excel.DataTableToExcel(dt_result, "汇总", true);
             excel.Dispose();
 
 
             for (int i = 0; i < 9; i++) {
-                 excel = new ExcelHelper(file + (i + 2009) + ".xlsx");
+                excel = new ExcelHelper(file + (i + 2009) + ".xlsx");
                 count = excel.DataTableToExcel(result[i], (i + 2009).ToString(), true);
             }
 
@@ -635,7 +640,7 @@ namespace ManagerIS.Operation {
                 row[10] = gddk.Xmmc;
                 row[11] = gddk.Gdmj * 15;
                 row[12] = gddk.Tdyt;
-                row[13] = data.GetSYMJ()*15;//批次剩余面积
+                row[13] = data.GetSYMJ() * 15;//批次剩余面积
                 row[38] = gddk.Bz;//nzydk.Bz + @"|" + gddk.Bz;
             } else {
                 row[38] = nzydk.Bz;
@@ -647,7 +652,7 @@ namespace ManagerIS.Operation {
             if (nzydk.Sx != 0) {
                 row[32 + nzydk.Sx] = "√";
             }
-            
+
             return row;
 
         }
@@ -658,7 +663,7 @@ namespace ManagerIS.Operation {
         /// <returns></returns>
         private static string ChangePCMC(string pcmc) {
             string zblx = "";//批标类型
-            if (pcmc.Contains("批次")) {
+            if (pcmc.Contains("计划")) {
                 zblx = "计划指标";
             } else if (pcmc.Contains("盘活")) {
                 zblx = "盘活指标";
@@ -684,32 +689,55 @@ namespace ManagerIS.Operation {
             dt_pc.Columns.Add("批准时间");
             dt.Columns.Add("批次名");
             dt.Columns.Add("地块名");
-            dt.Columns.Add("剩于面积");
+            dt.Columns.Add("项目名称");
+            dt.Columns.Add("备注");
             foreach (Data data in datas) {
                 //if (data.Pzmj != data.GetArea()) {
-                    DataRow dataRow = dt_pc.NewRow();
-                    dataRow[0] = data.Nzy;
+                DataRow dataRow = dt_pc.NewRow();
+                dataRow[0] = data.Nzy;
                 dataRow[1] = ChangePCMC(data.Nzy);
-                    //dataRow[1] = data.Pzmj;
-                    dataRow[2] = data.GetArea();
+                //dataRow[1] = data.Pzmj;
+                dataRow[2] = data.GetArea();
                 dataRow[3] = data.Pzrq.ToLongDateString();
-                    dt_pc.Rows.Add(dataRow);
+                dt_pc.Rows.Add(dataRow);
 
                 //}
 
 
-
                 foreach (NZYDK nzydk in data.Dk) {
-                    if (nzydk.Dkmj - nzydk.GetLeftArea() != nzydk.GetWGYY()) {
+                    //if (nzydk.Dkmj - nzydk.GetLeftArea() != nzydk.GetWGYY()) {
+                    //    DataRow dr = dt.NewRow();
+                    //    dr[0] = data.Nzy;
+                    //    dr[1] = nzydk.Dkmc;
+                    //    dr[2] = nzydk.Dkmj - nzydk.GetLeftArea();
+                    //    dt.Rows.Add(dr);
+                    //}
+                    if (nzydk.GetCZFS() != nzydk.GetWGYY()) {
+                        throw new Exception(nzydk.Dkmc);
+                    }
+                    //bool check = false;
+                    if (nzydk.GetWGYY() != nzydk.SYMJ() || nzydk.SYMJ() != nzydk.GetCZFS()||nzydk.GetCZFS()!=nzydk.GetWGYY()) {
                         DataRow dr = dt.NewRow();
                         dr[0] = data.Nzy;
                         dr[1] = nzydk.Dkmc;
-                        dr[2] = nzydk.Dkmj - nzydk.GetLeftArea();
+                        dr[2] = nzydk.Dkmj;
                         dt.Rows.Add(dr);
                     }
-
-
                 }
+
+
+                //if (nzydk.GetLeftArea() == 0) {
+                //        DataRow dr = dt.NewRow();
+                //        dr[0] = data.Nzy;
+                //        dr[1] = nzydk.Dkmc;
+                //        dr[2] = nzydk.Dkmj;
+                //        dt.Rows.Add(dr);
+                //    }
+
+
+                //}
+
+
             }
             ExcelHelper excel = new ExcelHelper(file + "检查.xlsx");
             int count = excel.DataTableToExcel(dt, "检查", true);

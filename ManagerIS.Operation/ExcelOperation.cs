@@ -50,7 +50,7 @@ namespace ManagerIS.Operation {
             Workbooks workbooks = app.Workbooks;
             _Workbook workbook = workbooks.Add(file);
             Sheets sheets = workbook.Sheets;
-            for (int i = 2; i <= 2; i++) {//读取2009-2017表格，首张为汇总表
+            for (int i = 1; i <= 1; i++) {//读取2009-2017表格，首张为汇总表
                 Worksheet worksheet = (Worksheet)sheets.get_Item(i);
                 int recordCount = 2;//从第二行开始判断
                 //查找数据行数
@@ -107,8 +107,8 @@ namespace ManagerIS.Operation {
                             //合并6、7列
                             sheet.Range[sheet.Cells[i, col], sheet.Cells[j - 1, col]].Merge(Type.Missing);
                             sheet.Range[sheet.Cells[i, col + 1], sheet.Cells[j - 1, col + 1]].Merge(Type.Missing);
-                            //合并20-39列
-                            for (int k = 20; k < 40; k++) {
+                            //合并20-36列
+                            for (int k = 20; k < 37; k++) {
                                 sheet.Range[sheet.Cells[i, k], sheet.Cells[j - 1, k]].Merge(Type.Missing);
 
                             }
