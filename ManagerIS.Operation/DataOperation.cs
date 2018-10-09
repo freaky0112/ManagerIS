@@ -567,7 +567,7 @@ namespace ManagerIS.Operation {
             string pcmc = "";
             foreach (Data data in datas) {
 
-                if (data.Nzy.Contains("盘活")) {
+                //if (data.Nzy.Contains("盘活")) {
 
 
                     for (int i = 2009; i <= 2017; i++) {
@@ -599,7 +599,7 @@ namespace ManagerIS.Operation {
                         }
 
                     }
-                }
+                //}
             }
             if (File.Exists(file + "导出.xlsx")) {
                 File.Delete(file + "导出.xlsx");
@@ -640,9 +640,11 @@ namespace ManagerIS.Operation {
                 row[10] = gddk.Xmmc;
                 row[11] = gddk.Gdmj * 15;
                 row[12] = gddk.Tdyt;
+                
                 row[13] = data.GetSYMJ() * 15;//批次剩余面积
-                row[38] = gddk.Bz;//nzydk.Bz + @"|" + gddk.Bz;
+                row[38] = nzydk.Bz + @"|" + gddk.Bz;
             } else {
+                row[13] = data.GetSYMJ() * 15;//批次剩余面积
                 row[38] = nzydk.Bz;
             }
 
@@ -688,9 +690,9 @@ namespace ManagerIS.Operation {
             dt_pc.Columns.Add("当前面积");
             dt_pc.Columns.Add("批准时间");
             dt.Columns.Add("批次名");
-            dt.Columns.Add("地块名");
-            dt.Columns.Add("项目名称");
-            dt.Columns.Add("备注");
+            dt.Columns.Add("批次面积");
+            dt.Columns.Add("已供面积");
+            dt.Columns.Add("剩余面积");
             foreach (Data data in datas) {
                 //if (data.Pzmj != data.GetArea()) {
                 DataRow dataRow = dt_pc.NewRow();
@@ -703,7 +705,7 @@ namespace ManagerIS.Operation {
 
                 //}
 
-
+                Decimal area = 0;
                 foreach (NZYDK nzydk in data.Dk) {
                     //if (nzydk.Dkmj - nzydk.GetLeftArea() != nzydk.GetWGYY()) {
                     //    DataRow dr = dt.NewRow();
@@ -712,18 +714,28 @@ namespace ManagerIS.Operation {
                     //    dr[2] = nzydk.Dkmj - nzydk.GetLeftArea();
                     //    dt.Rows.Add(dr);
                     //}
-                    if (nzydk.GetCZFS() != nzydk.GetWGYY()) {
-                        throw new Exception(nzydk.Dkmc);
+                    foreach(GDDK gddk in nzydk.Gddk) {
+                        area += gddk.Gdmj;
                     }
                     //bool check = false;
-                    if (nzydk.GetWGYY() != nzydk.SYMJ() || nzydk.SYMJ() != nzydk.GetCZFS()||nzydk.GetCZFS()!=nzydk.GetWGYY()) {
-                        DataRow dr = dt.NewRow();
-                        dr[0] = data.Nzy;
-                        dr[1] = nzydk.Dkmc;
-                        dr[2] = nzydk.Dkmj;
-                        dt.Rows.Add(dr);
-                    }
+                    //if (nzydk.GetWGYY() != nzydk.SYMJ() || nzydk.SYMJ() != nzydk.GetCZFS()||nzydk.GetCZFS()!=nzydk.GetWGYY()) {
+                    //    DataRow dr = dt.NewRow();
+                    //    dr[0] = data.Nzy;
+                    //    dr[1] = nzydk.Dkmc;
+                    //    dr[2] = nzydk.Dkmj;
+                    //    dt.Rows.Add(dr);
+                    //}
+                    
                 }
+
+                //if (data.GetArea() - area != data.GetSYMJ()) {
+                    DataRow dr = dt.NewRow();
+                    dr[0] = data.Nzy;
+                dr[1] = data.GetArea();
+                dr[2] = area*15;
+                    dr[3] = data.GetSYMJ()*15;
+                    dt.Rows.Add(dr);
+                //}
 
 
                 //if (nzydk.GetLeftArea() == 0) {
