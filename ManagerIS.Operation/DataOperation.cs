@@ -189,21 +189,28 @@ namespace ManagerIS.Operation {
             sql.Append("YDDW,");
             sql.Append("GDMJ,");
             sql.Append("DG, ");
-            sql.Append("BZ ");
+            sql.Append("BZ, ");
+            sql.Append("TDZL, " );
+            sql.Append("TDYT ");
             sql.Append(") values (");
             sql.Append("@DKGUID,");
             sql.Append("@DZJGH,");
             sql.Append("@YDDW,");
             sql.Append("@GDMJ,");
             sql.Append("@DG,");
-            sql.Append("@BZ)");
+            sql.Append("@BZ,");
+            sql.Append("@TDZL, ");
+            sql.Append("@TDYT )");
             MySqlParameter[] pt = new MySqlParameter[] {
                 new MySqlParameter("@DKGUID",guid),
                 new MySqlParameter("@DZJGH",gddk.Dzjgh),
                 new MySqlParameter("@YDDW",gddk.Xmmc),
                 new MySqlParameter("@GDMJ",gddk.Gdmj),
                 new MySqlParameter("@DG",gddk.Dgmj),
-                new MySqlParameter("@BZ",gddk.Bz)
+                new MySqlParameter("@BZ",gddk.Bz),
+                new MySqlParameter("@TDZL",gddk.Tdzl),
+                new MySqlParameter("@TDYT",gddk.Tdyt)
+
             };
             try {
                 Helper.MySqlHelper.ExecuteNonQuery(Method.Conntection(), CommandType.Text, sql.ToString(), pt);
@@ -309,6 +316,8 @@ namespace ManagerIS.Operation {
                 gddk.Dgmj = reader.GetDecimal("DG");
                 gddk.Bz = (reader.IsDBNull(6)) ? "" : reader.GetString("BZ");
                 gddk.Id = reader.GetInt32("ID");
+                gddk.Tdyt = (reader.IsDBNull(4)) ? "":reader.GetString("TDYT");
+                gddk.Tdzl = (reader.IsDBNull(8)) ? "":reader.GetString("TDZL");
                 nzydk.Gddk.Add(gddk);
             }
 
@@ -353,7 +362,9 @@ namespace ManagerIS.Operation {
             sql.Append("YDDW=@YDDW,");
             sql.Append("GDMJ=@GDMJ,");
             sql.Append("DG=@DG, ");
-            sql.Append("BZ=@BZ ");
+            sql.Append("BZ=@BZ, ");
+            sql.Append("TDYT=@TDYT, ");
+            sql.Append("TDZL=@TDZL ");
             sql.Append("where ");
             sql.Append("ID= @ID ");
             MySqlParameter[] pt = new MySqlParameter[] {
@@ -362,7 +373,9 @@ namespace ManagerIS.Operation {
                 new MySqlParameter("@YDDW",gddk.Xmmc),
                 new MySqlParameter("@GDMJ",gddk.Gdmj),
                 new MySqlParameter("@DG",gddk.Dgmj),
-                new MySqlParameter("@BZ",gddk.Bz)
+                new MySqlParameter("@BZ",gddk.Bz),
+                new MySqlParameter("@TDZL",gddk.Tdzl),
+                new MySqlParameter("@TDYT",gddk.Tdyt)
 
             };
 
@@ -449,7 +462,8 @@ namespace ManagerIS.Operation {
         public static void DataExport(string file) {
             List<Data> datas = MySQLViewRead();
 
-            ExcelExport(datas, file);
+            //ExcelExport(datas, file);
+            ExcelPHExport(datas, file);//导出盘活
         }
 
 
@@ -519,6 +533,7 @@ namespace ManagerIS.Operation {
                     gddk.Dzjgh = (reader.IsDBNull(10)) ? "" : reader.GetString("DZJGH");//获取电子监管号，如果不存在则为空
                     gddk.Gdmj = reader.GetDecimal("GDMJ");//获取供地面积
                     gddk.Dgmj = reader.GetDecimal("DG");//获取带供面积
+                    gddk.Tdzl = (reader.IsDBNull(31)) ? "" : reader.GetString("TDZL");//土地坐落
                     gddk.Tdyt = (reader.IsDBNull(13)) ? "" : reader.GetString("TDYT");//获取电子监管号，如果不存在则为空
                     gddk.Bz = ((reader.IsDBNull(8)) ? "" : reader.GetString("DKBZ"))
                         + "|" +
@@ -570,35 +585,35 @@ namespace ManagerIS.Operation {
                 //if (data.Nzy.Contains("盘活")) {
 
 
-                    for (int i = 2009; i <= 2017; i++) {
-                        ///遍历年份
+                for (int i = 2009; i <= 2017; i++) {
+                    ///遍历年份
 
-                        if (data.Pzrq.Year > 2008) {
-                            dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
-                            if (data.Nzy == pcmc) {
-                                index_year[data.Pzrq.Year - 2009]++;
+                    if (data.Pzrq.Year > 2008) {
+                        dt = result[data.Pzrq.Year - 2009];///对应各年份至格表
+                        if (data.Nzy == pcmc) {
+                            index_year[data.Pzrq.Year - 2009]++;
 
-                            } else {
-                                pcmc = data.Nzy;
-                            }
-
-                            index_year[9]++;
+                        } else {
+                            pcmc = data.Nzy;
                         }
+
+                        index_year[9]++;
+                    }
+                }
+
+                foreach (NZYDK nzydk in data.Dk) {
+                    if (nzydk.Gddk.Count == 0) {
+                        dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
+                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[9], dt_result));//导入汇总表
+                    }
+                    foreach (GDDK gddk in nzydk.Gddk) {
+
+                        dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
+                        dt_result.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[9], dt_result));//导入汇总表
+
                     }
 
-                    foreach (NZYDK nzydk in data.Dk) {
-                        if (nzydk.Gddk.Count == 0) {
-                            dt.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[data.Pzrq.Year - 2009], dt));
-                            dt_result.Rows.Add(DataRowInitialize(data, nzydk, null, index_year[9], dt_result));//导入汇总表
-                        }
-                        foreach (GDDK gddk in nzydk.Gddk) {
-
-                            dt.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[data.Pzrq.Year - 2009], dt));
-                            dt_result.Rows.Add(DataRowInitialize(data, nzydk, gddk, index_year[9], dt_result));//导入汇总表
-
-                        }
-
-                    }
+                }
                 //}
             }
             if (File.Exists(file + "导出.xlsx")) {
@@ -640,7 +655,7 @@ namespace ManagerIS.Operation {
                 row[10] = gddk.Xmmc;
                 row[11] = gddk.Gdmj * 15;
                 row[12] = gddk.Tdyt;
-                
+
                 row[13] = data.GetSYMJ() * 15;//批次剩余面积
                 row[38] = nzydk.Bz + @"|" + gddk.Bz;
             } else {
@@ -714,7 +729,7 @@ namespace ManagerIS.Operation {
                     //    dr[2] = nzydk.Dkmj - nzydk.GetLeftArea();
                     //    dt.Rows.Add(dr);
                     //}
-                    foreach(GDDK gddk in nzydk.Gddk) {
+                    foreach (GDDK gddk in nzydk.Gddk) {
                         area += gddk.Gdmj;
                     }
                     //bool check = false;
@@ -725,16 +740,16 @@ namespace ManagerIS.Operation {
                     //    dr[2] = nzydk.Dkmj;
                     //    dt.Rows.Add(dr);
                     //}
-                    
+
                 }
 
                 //if (data.GetArea() - area != data.GetSYMJ()) {
-                    DataRow dr = dt.NewRow();
-                    dr[0] = data.Nzy;
+                DataRow dr = dt.NewRow();
+                dr[0] = data.Nzy;
                 dr[1] = data.GetArea();
-                dr[2] = area*15;
-                    dr[3] = data.GetSYMJ()*15;
-                    dt.Rows.Add(dr);
+                dr[2] = area * 15;
+                dr[3] = data.GetSYMJ() * 15;
+                dt.Rows.Add(dr);
                 //}
 
 
@@ -766,16 +781,19 @@ namespace ManagerIS.Operation {
                 DataRow dr = dt.Rows[i];
                 string dzjgh = dr[4].ToString();
                 string tdyt = dr[5].ToString();
+                string tdzl = dr[6].ToString();
                 StringBuilder sql = new StringBuilder();
                 sql.Append("update ");
                 sql.Append("gdqk");
                 sql.Append(" set ");
-                sql.Append("TDYT=@TDYT ");
+                sql.Append("TDYT=@TDYT, ");
+                sql.Append("TDZL=@TDZL ");
                 sql.Append("where ");
                 sql.Append("DZJGH= @DZJGH ");
                 MySqlParameter[] pt = new MySqlParameter[] {
                 new MySqlParameter("@DZJGH",dzjgh),
-                new MySqlParameter("@TDYT",tdyt)
+                new MySqlParameter("@TDYT",tdyt),
+                new MySqlParameter("@tdzl",tdzl)
 
             };
 
@@ -786,6 +804,74 @@ namespace ManagerIS.Operation {
                 }
 
             }
+        }
+        /// <summary>
+        /// 盘活导出
+        /// </summary>
+        /// <param name="datas"></param>
+        /// <param name="file"></param>
+        private static void ExcelPHExport(List<Data> datas, string file) {
+            
+
+            DataTable dt = new DataTable();
+            for (int i = 0; i < 17; i++) {
+                dt.Columns.Add(i.ToString());
+            }
+            int index = 0;
+            foreach (Data data in datas) {
+                index++;
+                if (data.Nzy.Contains("盘活")) {
+                    foreach (NZYDK nzydk in data.Dk) {
+                        if (nzydk.Gddk.Count == 0) {
+                            dt.Rows.Add(DataRowPHInitialize(data, nzydk, null, index, dt));
+                        }
+                        foreach (GDDK gddk in nzydk.Gddk) {
+                            dt.Rows.Add(DataRowPHInitialize(data, nzydk, gddk, index, dt));
+                        }
+
+                    }
+
+                }
+                
+            }
+            if (File.Exists(file + "导出盘活.xlsx")) {
+                File.Delete(file + "导出盘活.xlsx");
+            }
+
+
+            ExcelHelper excel = new ExcelHelper(file + "导出盘活.xlsx");
+            int count = excel.DataTableToExcel(dt, "汇总", true);
+            excel.Dispose();
+        }
+
+        /// <summary>
+        /// 盘活批次导出生成行
+        /// </summary>
+        /// <param name="data">源数据</param>
+        /// <param name="index">序号</param>
+        /// <param name="dt">表</param>
+        /// <returns></returns>
+        private static DataRow DataRowPHInitialize(Data data, NZYDK nzydk, GDDK gddk, int index, DataTable dt) {
+            DataRow row = dt.NewRow();//读至供地数据开始写入行
+            row[0] = index;
+            row[1] = "海宁市";
+            row[3] = data.GetArea()*15;
+            row[4] = data.Nzy;
+            row[5] = nzydk.Dkmc;
+            row[6] = "是";
+            row[7] = nzydk.Dkmj*15;
+            row[10] = nzydk.SYMJ();//地块剩面积
+            if (gddk != null) {
+                row[11] = gddk.Dzjgh;
+                row[12] = gddk.Xmmc;
+                row[13] = gddk.Gdmj * 15;
+                row[15] = gddk.Tdyt;
+                row[14] = gddk.Tdzl;
+                
+            } else {
+            }
+            return row;
+
         }
     }
 }

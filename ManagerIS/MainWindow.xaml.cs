@@ -14,7 +14,7 @@ namespace ManagerIS {
             //Method.Initialize();
             //SQLiteOperation.Initialize();
 
-            tbxImportUrl.Text = @"C:\Users\freak\Desktop\补充.xlsx";
+            tbxImportUrl.Text = @"\\Mac\Home\Desktop\补充.xlsx";
         }
 
         private void tbxImportUrl_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
@@ -26,7 +26,8 @@ namespace ManagerIS {
             //for (int i = 2009; i <= 2018; i++) {
             //DataOperation.ExcelToMysql(tbxImportUrl.Text, year);
             //}
-            DataOperation.ImportDZJGH(@"C:\Users\freak\Desktop\海宁.xls");
+            DataOperation.ImportDZJGH(@"\\Mac\Home\Desktop\海宁20181010.xls");
+
             MessageBox.Show("导入成功");
         }
 
@@ -34,10 +35,11 @@ namespace ManagerIS {
             DateTime dt = DateTime.Now;
             
             //try {
-            //DataOperation.DataCheck(@"C:\Users\freak\Desktop\");
-            DataOperation.DataExport(@"C:\Users\freak\Desktop\");
-            ExcelOperation.MergeExcel(@"C:\Users\freak\Desktop\");
-            //ExcelOperation.FormateExcel(@"C:\Users\freak\Desktop\导出.xlsx");
+            //DataOperation.DataCheck(@"\\Mac\Home\Desktop\");
+            DataOperation.DataExport(@"\\Mac\Home\Desktop\");
+            //ExcelOperation.MergeExcel(@"\\Mac\Home\Desktop\");
+            ExcelOperation.FormatePHExcel(@"\\Mac\Home\Desktop\导出盘活.xlsx");
+
 
             MessageBox.Show(string.Format("导出成功,用时{0}秒",((Int32)((DateTime.Now-dt)).TotalSeconds)).ToString());
             // } catch (Exception ex) {

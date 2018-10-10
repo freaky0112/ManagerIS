@@ -122,5 +122,81 @@ namespace ManagerIS.Operation {
                 }
             }
         }
+
+        /// <summary>
+        /// 格式化盘活表格
+        /// </summary>
+        /// <param name="file"></param>
+        public static void FormatePHExcel(string file) {
+            Application app = new Application();
+            app.DisplayAlerts = false;
+            app.Visible = false;
+            app.UserControl = true;
+            Workbooks workbooks = app.Workbooks;
+            _Workbook workbook = workbooks.Add(file);
+            Sheets sheets = workbook.Sheets;
+            Worksheet worksheet = (Worksheet)sheets.get_Item(1);
+            int recordCount = 2;//从第二行开始判断
+                                //查找数据行数
+            while (true) {
+                if (Method.IsNumber(worksheet.Cells[recordCount, 1].TEXT)) {
+                    recordCount++;
+                } else {
+                    break;
+                }
+            }
+            MergePHCell(ref worksheet, 2, recordCount, 5);
+            MergePHCell(ref worksheet, 2, recordCount, 6);
+            workbook.SaveAs(file);
+            app.Quit();
+        }
+        /// <summary>
+        /// 合并单元格
+        /// </summary>
+        /// <param name="sheet"></param>
+        /// <param name="startline"></param>
+        /// <param name="recCount"></param>
+        /// <param name="col"></param>
+        private static void MergePHCell(ref Worksheet sheet, int startline, int recCount, int col) {
+            string start = sheet.Cells[startline, col].TEXT;
+            int index = 1;
+            for (int i = startline; i < recCount;) {
+                string temp;
+                int j = i;
+                while (true) {
+                    temp = sheet.Cells[j, col].TEXT;
+                    if (temp.Equals(start)) {
+                        j++;
+                    } else {
+                        start = temp;
+                        sheet.Range[sheet.Cells[i, col], sheet.Cells[j - 1, col]].Merge(Type.Missing);
+                        if (col == 5) {// 通过第三列批次名称判断合并批次单元格
+                            sheet.Cells[i, 1] = index;
+                            index++;
+                            //合并1-4列
+                            for (int k = 1; k <= 5; k++) {
+                                sheet.Range[sheet.Cells[i, k], sheet.Cells[j - 1, k]].Merge(Type.Missing);
+
+                            }
+                        }
+                        if (col == 6) {
+                            //合并6、7列
+                            //sheet.Range[sheet.Cells[i, col], sheet.Cells[j - 1, col]].Merge(Type.Missing);
+                            //合并5-10列
+                            for (int k = 6; k < 12; k++) {
+                                sheet.Range[sheet.Cells[i, k], sheet.Cells[j - 1, k]].Merge(Type.Missing);
+
+                            }
+                        }
+                        i = j;
+                        break;
+                    }
+                }
+                if (string.IsNullOrEmpty(start)) {
+                    break;
+                }
+            }
+        }
+
     }
 }

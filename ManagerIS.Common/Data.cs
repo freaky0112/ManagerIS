@@ -204,6 +204,7 @@ namespace ManagerIS.Common {
         private string bz;
         private int id;
         private string tdyt;
+        private string tdzl;
 
         public GDDK() {
             this.guid = Guid.NewGuid();
@@ -240,5 +241,6 @@ namespace ManagerIS.Common {
         /// 土地用途
         /// </summary>
         public string Tdyt { get => tdyt; set => tdyt = value; }
+        public string Tdzl { get => tdzl; set => tdzl = value; }
     }
 }

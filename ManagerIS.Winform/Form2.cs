@@ -20,6 +20,8 @@ namespace ManagerIS.Winform {
                 tbxGDMJ.Text = gddk.Gdmj.ToString();
                 tbxDGMJ.Text = gddk.Dgmj.ToString();
                 tbxBZ.Text = gddk.Bz.ToString();
+                tbxTDYT.Text = gddk.Tdyt.ToString();
+                tbxTDZL.Text = gddk.Tdzl.ToString();
             }
         }
         GDDK gddk;
@@ -33,6 +35,8 @@ namespace ManagerIS.Winform {
                 gddk.Gdmj = decimal.Parse(tbxGDMJ.Text);
                 gddk.Dgmj = decimal.Parse(tbxDGMJ.Text);
                 gddk.Bz = tbxBZ.Text;
+                gddk.Tdzl = tbxTDZL.Text;
+                gddk.Tdyt = tbxTDYT.Text;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

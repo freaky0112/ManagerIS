@@ -139,6 +139,7 @@ namespace ManagerIS.Winform {
         private void btnSubmit_Click(object sender, EventArgs e) {
             try {
                 nzydk.Check();
+                nzydk.Bz = tbxBZ.Text;
                     DataOperation.UpdateCZFS(nzydk);
                 DataOperation.UpdateNzydk(nzydk);
                     MessageBox.Show("数据更新成功");

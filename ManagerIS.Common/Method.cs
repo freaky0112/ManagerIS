@@ -31,10 +31,10 @@ namespace ManagerIS.Common
 
         #region mysql数据库链接
         //看连接的哪个数据库
-        private const string SERVER = "192.168.1.105";
+        //private const string SERVER = "192.168.1.105";
         //private const string SERVER = "10.211.55.2";
         //private const string SERVER = "192.168.3.41";
-
+        private const string SERVER = "20.13.6.209";
         private const uint PORT = 3306;
 
         private const string DATABASE = "info";
