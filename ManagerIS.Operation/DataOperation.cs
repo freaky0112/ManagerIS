@@ -12,7 +12,7 @@ using System.Collections;
 using System.IO;
 
 namespace ManagerIS.Operation {
-    public abstract class DataOperation {
+    public abstract partial class DataOperation {
         public static bool ExcelToMysql(string file, int year) {
             List<Data> datas = DatatableRead(ExcelToData(file, year));
             DatatableToMySQL(datas);
@@ -462,7 +462,7 @@ namespace ManagerIS.Operation {
         public static void DataExport(string file) {
             List<Data> datas = MySQLViewRead();
 
-            //ExcelExport(datas, file);
+            ExcelExport(datas, file);
             ExcelPHExport(datas, file);//导出盘活
         }
 
@@ -860,7 +860,7 @@ namespace ManagerIS.Operation {
             row[5] = nzydk.Dkmc;
             row[6] = "是";
             row[7] = nzydk.Dkmj*15;
-            row[10] = nzydk.SYMJ();//地块剩面积
+            row[10] = nzydk.SYMJ()*15;//地块剩面积
             if (gddk != null) {
                 row[11] = gddk.Dzjgh;
                 row[12] = gddk.Xmmc;

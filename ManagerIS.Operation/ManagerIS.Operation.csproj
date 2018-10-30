@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Check.cs" />
     <Compile Include="DataOperation.cs" />
     <Compile Include="ExcelOperation.cs" />
     <Compile Include="SQLiteOperation.cs" />

@@ -35,10 +35,11 @@ namespace ManagerIS {
             DateTime dt = DateTime.Now;
             
             //try {
-            //DataOperation.DataCheck(@"\\Mac\Home\Desktop\");
-            DataOperation.DataExport(@"\\Mac\Home\Desktop\");
+            DataOperation.DataChecked(@"\\Mac\Home\Desktop\");
+            ExcelOperation.FormatWGWExcel(@"\\Mac\Home\Desktop\未供完.xlsx"); ;
+            //DataOperation.DataExport(@"\\Mac\Home\Desktop\");
             //ExcelOperation.MergeExcel(@"\\Mac\Home\Desktop\");
-            ExcelOperation.FormatePHExcel(@"\\Mac\Home\Desktop\导出盘活.xlsx");
+            //ExcelOperation.FormatePHExcel(@"\\Mac\Home\Desktop\导出盘活.xlsx");
 
 
             MessageBox.Show(string.Format("导出成功,用时{0}秒",((Int32)((DateTime.Now-dt)).TotalSeconds)).ToString());
