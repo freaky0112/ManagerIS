@@ -107,6 +107,8 @@ namespace ManagerIS.Operation {
                             //合并6、7列
                             sheet.Range[sheet.Cells[i, col], sheet.Cells[j - 1, col]].Merge(Type.Missing);
                             sheet.Range[sheet.Cells[i, col + 1], sheet.Cells[j - 1, col + 1]].Merge(Type.Missing);
+                            //合并第15列
+                            sheet.Range[sheet.Cells[i, 15], sheet.Cells[j - 1, 15]].Merge(Type.Missing);
                             //合并20-36列
                             for (int k = 20; k < 37; k++) {
                                 sheet.Range[sheet.Cells[i, k], sheet.Cells[j - 1, k]].Merge(Type.Missing);

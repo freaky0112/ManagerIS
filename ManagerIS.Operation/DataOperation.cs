@@ -650,6 +650,9 @@ namespace ManagerIS.Operation {
             row[6] = nzydk.Dkmc;
             row[7] = nzydk.Dkmj * 15;
             row[8] = "是";
+            row[14] = nzydk.SYMJ() * 15;//地块剩余面积
+            row[36] = "周青峰";
+            row[37] = "13732587888";
             if (gddk != null) {
                 row[9] = gddk.Dzjgh;
                 row[10] = gddk.Xmmc;
@@ -657,9 +660,11 @@ namespace ManagerIS.Operation {
                 row[12] = gddk.Tdyt;
 
                 row[13] = data.GetSYMJ() * 15;//批次剩余面积
+                
                 row[38] = nzydk.Bz + @"|" + gddk.Bz;
             } else {
                 row[13] = data.GetSYMJ() * 15;//批次剩余面积
+                
                 row[38] = nzydk.Bz;
             }
 
@@ -700,6 +705,7 @@ namespace ManagerIS.Operation {
             List<Data> datas = MySQLViewRead();
             DataTable dt = new DataTable();
             DataTable dt_pc = new DataTable();
+            DataTable dt_dg = new DataTable();
             dt_pc.Columns.Add("批次名");
             dt_pc.Columns.Add("批准面积");
             dt_pc.Columns.Add("当前面积");
@@ -708,6 +714,15 @@ namespace ManagerIS.Operation {
             dt.Columns.Add("批次面积");
             dt.Columns.Add("已供面积");
             dt.Columns.Add("剩余面积");
+            dt_dg.Columns.Add("批次名");
+            dt_dg.Columns.Add("批准面积");
+            dt_dg.Columns.Add("地块名称");
+            dt_dg.Columns.Add("地块面积");
+            dt_dg.Columns.Add("电子监管号");
+            dt_dg.Columns.Add("供地项目");
+            dt_dg.Columns.Add("供地面积");
+            dt_dg.Columns.Add("代供面积");
+
             foreach (Data data in datas) {
                 //if (data.Pzmj != data.GetArea()) {
                 DataRow dataRow = dt_pc.NewRow();
@@ -731,6 +746,20 @@ namespace ManagerIS.Operation {
                     //}
                     foreach (GDDK gddk in nzydk.Gddk) {
                         area += gddk.Gdmj;
+
+                        if (gddk.Dgmj>0) {
+                            dataRow = dt_dg.NewRow();
+                            dataRow[0] = data.Nzy;
+                            dataRow[1] = data.Pzmj;
+                            dataRow[2] = nzydk.Dkmc;
+                            dataRow[3] = nzydk.Dkmj;
+                            dataRow[4] = gddk.Dzjgh;
+                            dataRow[5] = gddk.Xmmc;
+                            dataRow[6] = gddk.Gdmj;
+                            dataRow[7] = gddk.Dgmj;
+                            dt_dg.Rows.Add(dataRow);
+                        }
+
                     }
                     //bool check = false;
                     //if (nzydk.GetWGYY() != nzydk.SYMJ() || nzydk.SYMJ() != nzydk.GetCZFS()||nzydk.GetCZFS()!=nzydk.GetWGYY()) {
@@ -770,6 +799,8 @@ namespace ManagerIS.Operation {
             int count = excel.DataTableToExcel(dt, "检查", true);
             excel = new ExcelHelper(file + "自查.xlsx");
             count = excel.DataTableToExcel(dt_pc, "自查", true);
+            excel = new ExcelHelper(file + "代供.xlsx");
+            count = excel.DataTableToExcel(dt_dg, "代供", true);
 
         }
 
