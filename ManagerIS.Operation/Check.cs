@@ -29,6 +29,7 @@ namespace ManagerIS.Operation {
                         dr[3] = nzydk.Dkmc;
                         dr[4] = nzydk.Dkmj * 15;
                         dr[5] = nzydk.SYMJ()* 15;
+
                         dt.Rows.Add(dr);
                     }
                 }

@@ -652,7 +652,7 @@ namespace ManagerIS.Operation {
             row[8] = "是";
             row[14] = nzydk.SYMJ() * 15;//地块剩余面积
             row[36] = "周青峰";
-            row[37] = "13732587888";
+            row[37] = "0573-87289249";
             if (gddk != null) {
                 row[9] = gddk.Dzjgh;
                 row[10] = gddk.Xmmc;

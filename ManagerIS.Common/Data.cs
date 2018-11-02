@@ -104,6 +104,7 @@ namespace ManagerIS.Common {
 
         private decimal[] czfs;
         private int sx;
+        private string wkt;
         
         public NZYDK() {
             this.gddk = new List<GDDK>();
@@ -138,6 +139,8 @@ namespace ManagerIS.Common {
         /// 处置方式
         /// </summary>
         public decimal[] Czfs { get => czfs; set => czfs = value; }
+        public string Wkt { get => wkt; set => wkt = value; }
+
         /// <summary>
         /// 地块剩余面积
         /// </summary>
@@ -205,6 +208,9 @@ namespace ManagerIS.Common {
         private int id;
         private string tdyt;
         private string tdzl;
+        private decimal gdzmj;
+        private DateTime pzrq;
+        private string wkt;
 
         public GDDK() {
             this.guid = Guid.NewGuid();
@@ -241,6 +247,18 @@ namespace ManagerIS.Common {
         /// 土地用途
         /// </summary>
         public string Tdyt { get => tdyt; set => tdyt = value; }
+        /// <summary>
+        ///土地坐落
+        /// </summary>
         public string Tdzl { get => tdzl; set => tdzl = value; }
+        /// <summary>
+        /// 批准日期
+        /// </summary>
+        public DateTime Pzrq { get => pzrq; set => pzrq = value; }
+        /// <summary>
+        /// 供地总面积
+        /// </summary>
+        public decimal Gdzmj { get => gdzmj; set => gdzmj = value; }
+        public string Wkt { get => wkt; set => wkt = value; }
     }
 }
