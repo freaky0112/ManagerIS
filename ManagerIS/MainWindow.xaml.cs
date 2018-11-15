@@ -33,7 +33,9 @@ namespace ManagerIS {
 
         private void btnExport_Click(object sender, RoutedEventArgs e) {
             DateTime dt = DateTime.Now;
+            string file = @"\\Mac\Home\Desktop\";
 
+            DataOperation.Export12(file);
             //try {
             //DataOperation.DataCheck(@"\\Mac\Home\Desktop\");
             DataOperation.DataChecked(@"\\Mac\Home\Desktop\");
